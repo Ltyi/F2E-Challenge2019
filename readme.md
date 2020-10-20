@@ -1,5 +1,4 @@
 # F2E 前端修練精神時光屋
----
 
 [官方頁面](https://challenge.thef2e.com/)
 
