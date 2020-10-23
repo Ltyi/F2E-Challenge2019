@@ -5,7 +5,12 @@ module.exports = {
   },
   purge: ['./src/**/*.vue'],
   theme: {
+    fontFamily: {
+      base: ['Roboto', 'sans-serif'],
+      noto: ['Noto Sans TC', 'sans-serif']
+    },
     colors: {
+      white: '#ffffff',
       gray: {
         100: '#f9f9f9',
         200: '#e3e3e3',
@@ -43,6 +48,9 @@ module.exports = {
       }
     },
     extend: {
+      fontSize: {
+        100: '100px'
+      },
       borderWidth: {
         3: '3px'
       }

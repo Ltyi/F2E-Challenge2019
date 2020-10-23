@@ -1,11 +1,11 @@
 <template>
-  <div class="w-2/12">
-    <BasePieChart break></BasePieChart>
+  <div class="w-3/12">
+    <BaseTimer break></BaseTimer>
   </div>
 </template>
 
 <script setup>
-export { default as BasePieChart } from '@/components/BasePieChart'
+export { default as BaseTimer } from '@/components/BaseTimer'
 
 export default {
   name: 'Home'
