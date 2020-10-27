@@ -16,7 +16,7 @@
         class="relative text-100 font-bold"
         :class="isCounting ? 'text-white' : 'text-green-900'"
       >
-        <span>05:00</span>
+        <span>{{ countDownFormat }}</span>
 
         <div
           class="absolute w-full text-lg flex px-2"
@@ -43,17 +43,11 @@
         </div>
       </div>
     </div>
-
-    {{ test }}
   </div>
 </template>
 
 <script setup="props">
-import { computed, ref } from 'vue'
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-
-dayjs.extend(duration)
+import { inject, computed, ref } from 'vue'
 
 export default {
   name: 'BaseTimer',
@@ -64,9 +58,9 @@ export default {
 }
 
 export const { timerClass } = useStyle()
-export const { percent, start, pause, isCounting } = useTimer()
+export const { percent, start, pause, isCounting, countDownFormat } = useTimer()
 
-export const test = ref(dayjs.duration(300000).asSeconds())
+const dayjs = inject('dayjs')
 
 // [ SVG 樣式套用 ]
 function useStyle() {
@@ -84,11 +78,20 @@ function useStyle() {
 
 // [ 計時器 ]
 function useTimer() {
-  const timer = ref(null)
-  const counter = ref(0)
-  const duration = computed(() => (props.break ? 300 : 1500))
-  const percent = computed(() => (100 / duration.value) * counter.value)
+  const modeDuration = props.break ? 300 : 1500
+  const timer = ref(null) // interval
+  const counter = ref(0) // 目前執行秒數
+  const percent = computed(() => (100 / modeDuration) * counter.value) // 進度百分比
 
+  // 進度轉換為 hh:mm 計時器
+  const countDownFormat = computed(() => {
+    const current = modeDuration * 1000 - counter.value * 1000
+    const currentDuration = dayjs.duration(current)
+
+    return dayjs(currentDuration.asMilliseconds()).format('mm:ss')
+  })
+
+  // interval 是否計時中
   const isCounting = computed(() => {
     return !!timer.value
   })
@@ -96,7 +99,6 @@ function useTimer() {
   const start = () => {
     timer.value = setInterval(() => {
       counter.value++
-      console.log(percent.value)
 
       if (percent.value === 100) {
         pause()
@@ -113,7 +115,8 @@ function useTimer() {
     percent,
     start,
     pause,
-    isCounting
+    isCounting,
+    countDownFormat
   }
 }
 </script>
