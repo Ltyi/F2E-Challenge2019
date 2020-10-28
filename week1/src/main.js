@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // [ Plugins ]
 import dayjs from './plugins/dayjs'
 
-// [ Main CSS Entry ]
+// [ CSS Entry ]
 import './style/main.css'
 
 library.add(faStopCircle, faTimes, faPlay)

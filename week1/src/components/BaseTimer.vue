@@ -12,10 +12,7 @@
     </svg>
 
     <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center">
-      <div
-        class="relative text-100 font-bold"
-        :class="isCounting ? 'text-white' : 'text-green-900'"
-      >
+      <div class="relative text-100 font-bold" :class="textClass">
         <span>{{ countDownFormat }}</span>
 
         <div
@@ -57,10 +54,10 @@ export default {
   }
 }
 
-export const { timerClass } = useStyle()
-export const { percent, start, pause, isCounting, countDownFormat } = useTimer()
-
 const dayjs = inject('dayjs')
+
+export const { timerClass, textClass } = useStyle()
+export const { percent, start, pause, isCounting, countDownFormat } = useTimer()
 
 // [ SVG 樣式套用 ]
 function useStyle() {
@@ -68,12 +65,20 @@ function useStyle() {
     return {
       timer: true,
       'timer-break': props.break,
-      'timer-break--start': isCounting.value,
-      'timer-focus': !props.break
+      'timer-focus': !props.break,
+      'timer--start': isCounting.value
     }
   })
 
-  return { timerClass }
+  const textClass = computed(() => {
+    return {
+      'text-white': isCounting.value,
+      'text-green-900': !isCounting.value && props.break,
+      'text-red-800': !isCounting.value && !props.break
+    }
+  })
+
+  return { timerClass, textClass }
 }
 
 // [ 計時器 ]
@@ -135,8 +140,20 @@ function useTimer() {
   @apply stroke-current text-green-500;
 }
 
-.timer-break--start {
+.timer-focus {
+  @apply bg-red-200 border-red-600;
+}
+
+.timer-focus circle {
+  @apply stroke-current text-red-500;
+}
+
+.timer-break.timer--start {
   @apply bg-green-800 border-green-900;
+}
+
+.timer-focus.timer--start {
+  @apply bg-red-900 border-red-1100;
 }
 
 circle {

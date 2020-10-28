@@ -1,5 +1,6 @@
 <template>
   <div class="w-3/12">
+    <BaseTimer></BaseTimer>
     <BaseTimer break></BaseTimer>
   </div>
 </template>

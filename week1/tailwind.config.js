@@ -1,7 +1,7 @@
 module.exports = {
   future: {
-    // removeDeprecatedGapUtilities: true,
-    // purgeLayersByDefault: true,
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true
   },
   purge: ['./src/**/*.vue'],
   theme: {
@@ -24,7 +24,7 @@ module.exports = {
         200: '#ffe9e9',
         300: '#ffcdcd',
         400: '#fe8d8d',
-        500: '#ff7575',
+        500: '#f65454',
         600: '#ff6d6d',
         700: '#f85a5a',
         800: '#e54343',
