@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 module.exports = {
   future: {
     removeDeprecatedGapUtilities: true,
@@ -20,18 +22,16 @@ module.exports = {
         600: '#4a4a4a'
       },
       red: {
-        100: '#ffeded',
-        200: '#ffe9e9',
-        300: '#ffcdcd',
-        400: '#fe8d8d',
-        500: '#f65454',
-        600: '#ff6d6d',
-        700: '#f85a5a',
-        800: '#e54343',
-        900: '#dc3535',
-        1000: '#cb2424',
-        1100: '#ba2323',
-        1200: '#ff0000'
+        base: '#ff0000',
+        100: 'rgba(255,124,124,0.15)',
+        200: 'rgba(234,14,14,0.45)',
+        300: '#ff7575',
+        400: '#ff6d6d',
+        500: '#f85a5a',
+        600: '#e54343',
+        700: '#dc3535',
+        800: '#cb2424',
+        900: '#ba2323'
       },
       green: {
         100: '#e6fdf8',
@@ -48,6 +48,15 @@ module.exports = {
       }
     },
     extend: {
+      width: {
+        21: '5.25rem'
+      },
+      height: {
+        21: '5.25rem'
+      },
+      padding: {
+        21: '5.25rem'
+      },
       fontSize: {
         100: '100px'
       },
@@ -56,6 +65,18 @@ module.exports = {
       }
     }
   },
-  variants: {},
-  plugins: []
+  plugins: [
+    plugin(({ addUtilities }) => {
+      const newUtilities = {
+        '.back-hidden': {
+          'backface-visibility': 'hidden'
+        },
+        '.wtiting-v-rl': {
+          'writing-mode': 'vertical-rl'
+        }
+      }
+
+      addUtilities(newUtilities)
+    })
+  ]
 }

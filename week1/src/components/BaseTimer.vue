@@ -74,7 +74,7 @@ function useStyle() {
     return {
       'text-white': isCounting.value,
       'text-green-900': !isCounting.value && props.break,
-      'text-red-800': !isCounting.value && !props.break
+      'text-red-600': !isCounting.value && !props.break
     }
   })
 
@@ -141,7 +141,7 @@ function useTimer() {
 }
 
 .timer-focus {
-  @apply bg-red-200 border-red-600;
+  @apply bg-red-100 border-red-400;
 }
 
 .timer-focus circle {
@@ -153,7 +153,7 @@ function useTimer() {
 }
 
 .timer-focus.timer--start {
-  @apply bg-red-900 border-red-1100;
+  @apply bg-red-900 border-red-900;
 }
 
 circle {
