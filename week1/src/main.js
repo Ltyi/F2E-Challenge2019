@@ -3,14 +3,21 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+// [ CSS Entry ]
+import './style/main.css'
+
 // [ Plugins ]
 import dayjs from './plugins/dayjs'
 import fontAwesome from './plugins/fontAwesome'
 
-// [ CSS Entry ]
-import './style/main.css'
+// [ Base Components ]
+import BaseRow from './components/BaseRow'
+import BaseCol from './components/BaseCol'
 
 const app = createApp(App)
+
+app.component('BaseRow', BaseRow)
+app.component('BaseCol', BaseCol)
 
 app.use(dayjs)
 app.use(fontAwesome)

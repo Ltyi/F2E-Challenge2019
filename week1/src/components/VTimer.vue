@@ -47,7 +47,7 @@
 import { inject, computed, ref } from 'vue'
 
 export default {
-  name: 'BaseTimer',
+  name: 'VStepper',
 
   props: {
     break: Boolean,
