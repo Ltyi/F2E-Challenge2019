@@ -50,7 +50,8 @@ export default {
   name: 'BaseTimer',
 
   props: {
-    break: Boolean
+    break: Boolean,
+    longBreak: Boolean
   }
 }
 
@@ -83,7 +84,7 @@ function useStyle() {
 
 // [ 計時器 ]
 function useTimer() {
-  const modeDuration = props.break ? 300 : 1500
+  const modeDuration = props.break ? (props.longBreak ? 900 : 300) : 1500
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
   const percent = computed(() => (100 / modeDuration) * counter.value) // 進度百分比

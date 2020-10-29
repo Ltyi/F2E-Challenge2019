@@ -1,10 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
+// import Home from '../views/Home.vue'
+
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home')
+    component: () => import(/* webpackChunkName: "Home" */ '../views/Home')
   },
   {
     path: '/analytics',
@@ -14,7 +16,8 @@ const routes = [
   {
     path: '/mission',
     name: 'Mission',
-    component: () => import('../views/Mission')
+    component: () =>
+      import(/* webpackMode: "lazy", webpackChunkName: "Mission" */ '../views/Mission')
   },
   {
     path: '/rington',

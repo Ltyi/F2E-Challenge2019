@@ -1,13 +1,12 @@
 <template>
   <div>
-    work
-    <!-- <BaseTimer></BaseTimer> -->
+    <!-- <BaseTimer break long-break></BaseTimer> -->
     <!-- <BaseTimer break></BaseTimer> -->
   </div>
 </template>
 
 <script setup>
-export { default as BaseTimer } from '@/components/BaseTimer'
+// export { default as BaseTimer } from '@/components/BaseTimer'
 
 export default {
   name: 'Home'

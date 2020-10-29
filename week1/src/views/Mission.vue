@@ -1,3 +1,5 @@
 <template>
-  <div>mission</div>
+  <div>
+    <h1>mission</h1>
+  </div>
 </template>
