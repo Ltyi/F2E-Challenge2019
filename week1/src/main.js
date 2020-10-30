@@ -10,14 +10,7 @@ import './style/main.css'
 import dayjs from './plugins/dayjs'
 import fontAwesome from './plugins/fontAwesome'
 
-// [ Base Components ]
-import BaseRow from './components/BaseRow'
-import BaseCol from './components/BaseCol'
-
 const app = createApp(App)
-
-app.component('BaseRow', BaseRow)
-app.component('BaseCol', BaseCol)
 
 app.use(dayjs)
 app.use(fontAwesome)

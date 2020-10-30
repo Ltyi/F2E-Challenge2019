@@ -7,7 +7,8 @@
 
       <!-- content -->
       <div class="pl-21 h-full">
-        <div class="p-16 mx-auto h-full">
+        <!-- container -->
+        <div class="mx-auto h-full">
           <router-view />
         </div>
       </div>
