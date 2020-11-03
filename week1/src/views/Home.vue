@@ -7,7 +7,7 @@
       <div class="flex-grow p-6 bg-gray-100 rounded-md font-noto">
         <h3
           class="text-lg text-gray-400 cursor-pointer inline-block"
-          @click="test = true"
+          @click="addMissionDialog = true"
         >
           <span class="mr-3">+</span>
           增加新任務
@@ -40,23 +40,47 @@
         <span>The thing is doing now</span>
       </div>
     </div>
-  </div>
 
-  <BaseDialog v-model="test"></BaseDialog>
+    <!-- 新增任務 Dialog -->
+    <BaseDialog v-model="addMissionDialog">
+      <div class="font-noto">
+        <input
+          v-model="missionText"
+          type="text"
+          placeholder="請輸入任務名稱"
+          class="outline-none border-2 rounded px-4 py-2 w-full mb-4"
+        />
+
+        <div class="flex justify-end">
+          <base-btn class="mr-2" color="red" @click="addMission">新增任務</base-btn>
+          <base-btn @click="addMissionDialog = false">取消</base-btn>
+        </div>
+      </div>
+    </BaseDialog>
+  </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 
-export { default as VStepper } from '@/components/VStepper'
-export { default as VTimer } from '@/components/VTimer'
-export { default as BaseDialog } from '@/components/BaseDialog'
+import VStepper from '@/components/VStepper'
+import VTimer from '@/components/VTimer'
+import BaseBtn from '@/components/BaseBtn'
+import BaseDialog from '@/components/BaseDialog'
 
 export default {
-  name: 'Home'
+  name: 'Home',
+
+  components: {
+    VStepper,
+    VTimer,
+    BaseDialog,
+    BaseBtn
+  }
 }
 
-export const test = ref(false)
+export const addMissionDialog = ref(false)
+export const missionText = ref('')
 
 // [ Timer 任務列表 ]
 export const timerList = ref([
@@ -126,5 +150,14 @@ export const currentMission = computed(() => {
 export const missionDone = () => {
   const currentMission = timerList.value.find(item => !item.done)
   currentMission.done = true
+}
+
+// [ 新增任務 ]
+export const addMission = () => {
+  timerList.value.push({
+    title: missionText.value,
+    mode: 'focus',
+    done: false
+  })
 }
 </script>

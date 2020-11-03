@@ -29,8 +29,7 @@
             v-show="modelValue"
             class="p-4 bg-white w-full max-w-lg rounded-lg overflow-hidden shadow-xl transform transition-all"
           >
-            <button @click="$emit('update:modelValue', false)">close</button>
-            <button @click="$emit('update:modelValue', true)">open</button>
+            <slot></slot>
           </div>
         </transition>
       </div>

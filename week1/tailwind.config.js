@@ -65,6 +65,9 @@ module.exports = {
       }
     }
   },
+  variants: {
+    backgroundColor: ['responsive', 'hover', 'focus', 'active', 'group-hover']
+  },
   plugins: [
     plugin(({ addUtilities }) => {
       const newUtilities = {
