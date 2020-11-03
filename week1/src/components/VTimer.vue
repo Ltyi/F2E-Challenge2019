@@ -43,15 +43,17 @@
   </div>
 </template>
 
-<script setup="props">
+<script setup="props, { emit }">
 import { inject, computed, ref } from 'vue'
 
 export default {
   name: 'VStepper',
 
   props: {
-    break: Boolean,
-    longBreak: Boolean
+    mode: {
+      type: String,
+      default: 'focus'
+    }
   }
 }
 
@@ -84,14 +86,25 @@ function useStyle() {
 
 // [ 計時器 ]
 function useTimer() {
-  const modeDuration = props.break ? (props.longBreak ? 900 : 300) : 1500
+  const modeDuration = () => {
+    switch (props.mode) {
+      case 'break':
+        return 300
+      case 'longBreak':
+        return 900
+      case 'focus':
+        return 10
+      default:
+        return 10
+    }
+  }
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
-  const percent = computed(() => (100 / modeDuration) * counter.value) // 進度百分比
+  const percent = computed(() => (100 / modeDuration()) * counter.value) // 進度百分比
 
   // 進度轉換為 hh:mm 計時器
   const countDownFormat = computed(() => {
-    const current = modeDuration * 1000 - counter.value * 1000
+    const current = modeDuration() * 1000 - counter.value * 1000
     const currentDuration = dayjs.duration(current)
 
     return dayjs(currentDuration.asMilliseconds()).format('mm:ss')
@@ -107,7 +120,8 @@ function useTimer() {
       counter.value++
 
       if (percent.value === 100) {
-        pause()
+        emit('mission:done')
+        reset()
       }
     }, 1000)
   }
@@ -117,10 +131,17 @@ function useTimer() {
     timer.value = null
   }
 
+  const reset = () => {
+    clearInterval(timer.value)
+    timer.value = null
+    counter.value = 0
+  }
+
   return {
     percent,
     start,
     pause,
+    reset,
     isCounting,
     countDownFormat
   }
@@ -154,7 +175,7 @@ function useTimer() {
 }
 
 .timer-focus.timer--start {
-  @apply bg-red-900 border-red-900;
+  @apply bg-red-700 border-red-900;
 }
 
 circle {
