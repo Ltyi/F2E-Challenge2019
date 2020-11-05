@@ -11,18 +11,17 @@ const routes = [
   {
     path: '/analytics',
     name: 'Analytics',
-    component: () => import('../views/Analytics')
+    component: () => import(/* webpackChunkName: "Analytics" */ '../views/Analytics')
   },
   {
     path: '/mission',
     name: 'Mission',
-    component: () =>
-      import(/* webpackMode: "lazy", webpackChunkName: "Mission" */ '../views/Mission')
+    component: () => import(/* webpackChunkName: "Mission" */ '../views/Mission')
   },
   {
     path: '/rington',
     name: 'Rington',
-    component: () => import('../views/Rington')
+    component: () => import(/* webpackChunkName: "Rington" */ '../views/Rington')
   }
 ]
 
