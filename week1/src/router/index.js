@@ -6,22 +6,22 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/Home')
+    component: () => import('../views/Home')
   },
   {
     path: '/analytics',
     name: 'Analytics',
-    component: () => import(/* webpackChunkName: "Analytics" */ '../views/Analytics')
+    component: () => import('../views/Analytics')
   },
   {
     path: '/mission',
     name: 'Mission',
-    component: () => import(/* webpackChunkName: "Mission" */ '../views/Mission')
+    component: () => import('../views/Mission')
   },
   {
     path: '/rington',
     name: 'Rington',
-    component: () => import(/* webpackChunkName: "Rington" */ '../views/Rington')
+    component: () => import('../views/Rington')
   }
 ]
 

@@ -3,8 +3,10 @@
     <div class="flex flex-col w-4/12 p-16 h-full">
       <VStepper :items="stepperList"></VStepper>
 
+      <div class="flex-grow"></div>
+
       <!-- 增加新任務 -->
-      <div class="flex-grow p-6 bg-gray-100 rounded-md font-noto">
+      <div class="h-40 p-6 bg-gray-100 rounded-md font-noto">
         <h3
           class="text-lg text-gray-400 cursor-pointer inline-block"
           @click="addMissionDialog = true"
@@ -29,7 +31,7 @@
       </div>
 
       <!-- Timer -->
-      <div class="w-full flex justify-center">
+      <div v-if="currentMission" class="w-full flex justify-center">
         <div class="w-6/12">
           <VTimer :mode="currentMission.mode" @mission:done="missionDone"></VTimer>
         </div>
@@ -42,26 +44,29 @@
     </div>
 
     <!-- 新增任務 Dialog -->
-    <BaseDialog v-model="addMissionDialog">
+    <BaseDialog v-model="missionDialog">
       <div class="font-noto">
         <input
-          v-model="missionText"
+          v-model="missionTitle"
           type="text"
           placeholder="請輸入任務名稱"
           class="outline-none border-2 rounded px-4 py-2 w-full mb-4"
         />
 
         <div class="flex justify-end">
-          <base-btn class="mr-2" color="red" @click="addMission">新增任務</base-btn>
-          <base-btn @click="addMissionDialog = false">取消</base-btn>
+          <base-btn class="mr-2" color="red" @click="missionAdd">新增任務</base-btn>
+          <base-btn @click="missionDialog = false">取消</base-btn>
         </div>
       </div>
     </BaseDialog>
+
+    {{ currentMission }}
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
 
 import VStepper from '@/components/VStepper'
 import VTimer from '@/components/VTimer'
@@ -79,85 +84,67 @@ export default {
   }
 }
 
-export const addMissionDialog = ref(false)
-export const missionText = ref('')
+const store = useStore()
 
-// [ Timer 任務列表 ]
-export const timerList = ref([
-  {
-    title: '任務1',
-    mode: 'focus',
-    done: false
-  },
-  {
-    title: '休息時間',
-    mode: 'break',
-    done: false
-  },
-  {
-    title: '任務2',
-    mode: 'focus',
-    done: false
-  },
-  {
-    title: '休息時間',
-    mode: 'break',
-    done: false
-  },
-  {
-    title: '任務3',
-    mode: 'focus',
-    done: false
-  },
-  {
-    title: '休息時間',
-    mode: 'break',
-    done: false
-  },
-  {
-    title: '任務4',
-    mode: 'focus',
-    done: false
-  },
-  {
-    title: '休息時間',
-    mode: 'loneBreak',
-    done: false
-  },
-  {
-    title: '任務5',
-    mode: 'focus',
-    done: false
-  },
-  {
-    title: '休息時間',
-    mode: 'break',
-    done: false
+export const { timerList, stepperList, currentMission, missionDone } = useMissionList()
+export const { missionDialog, missionTitle, missionAdd } = useMissionHandler()
+
+// [ 任務列表 ]
+function useMissionList() {
+  // 番茄鐘任務列表
+  const timerList = ref([])
+
+  // 任務流程列表
+  const stepperList = computed(() => {
+    return timerList.value.filter(item => !item.done && item.mode !== 'break').slice(0, 6)
+  })
+
+  // 當前執行任務
+  const currentMission = computed(() => {
+    return timerList.value.find(item => !item.done)
+  })
+
+  // 任務結束觸發
+  const missionDone = () => {
+    const currentMission = timerList.value.find(item => !item.done)
+    currentMission.done = true
   }
-])
 
-// [ 任務佇列表 ]
-export const stepperList = computed(() => {
-  return timerList.value.filter(item => !item.done && item.mode !== 'break').slice(0, 6)
-})
+  onMounted(() => {
+    const missionList = computed(() => store.state.missionList)
 
-// [ 當前執行任務 ]
-export const currentMission = computed(() => {
-  return timerList.value.find(item => !item.done)
-})
+    missionList.value.forEach((item, i) => {
+      if ((i + 1) % 4 === 0) {
+        timerList.value.push(item, {
+          title: '休息時間',
+          mode: 'longBreak',
+          done: false
+        })
+      } else {
+        timerList.value.push(item, {
+          title: '休息時間',
+          mode: 'break',
+          done: false
+        })
+      }
+    })
+  })
 
-// [ 任務結束觸發 ]
-export const missionDone = () => {
-  const currentMission = timerList.value.find(item => !item.done)
-  currentMission.done = true
+  return {
+    timerList,
+    stepperList,
+    currentMission,
+    missionDone
+  }
 }
 
 // [ 新增任務 ]
-export const addMission = () => {
-  timerList.value.push({
-    title: missionText.value,
-    mode: 'focus',
-    done: false
-  })
+function useMissionHandler() {
+  const missionDialog = ref(false)
+  const missionTitle = ref('')
+
+  const missionAdd = () => store.commit('missionAdd', missionTitle.value)
+
+  return { missionDialog, missionTitle, missionAdd }
 }
 </script>
