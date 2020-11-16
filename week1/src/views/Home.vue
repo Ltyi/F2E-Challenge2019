@@ -9,7 +9,7 @@
       <div class="h-40 p-6 bg-gray-100 rounded-md font-noto">
         <h3
           class="text-lg text-gray-400 cursor-pointer inline-block"
-          @click="addMissionDialog = true"
+          @click="missionDialog = true"
         >
           <span class="mr-3">+</span>
           增加新任務
@@ -59,13 +59,11 @@
         </div>
       </div>
     </BaseDialog>
-
-    {{ currentMission }}
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
 import VStepper from '@/components/VStepper'
@@ -89,14 +87,15 @@ const store = useStore()
 export const { timerList, stepperList, currentMission, missionDone } = useMissionList()
 export const { missionDialog, missionTitle, missionAdd } = useMissionHandler()
 
-// [ 任務列表 ]
 function useMissionList() {
   // 番茄鐘任務列表
-  const timerList = ref([])
+  const timerList = computed(() => {
+    return store.state.missionList.filter(x => !x.done)
+  })
 
   // 任務流程列表
   const stepperList = computed(() => {
-    return timerList.value.filter(item => !item.done && item.mode !== 'break').slice(0, 6)
+    return timerList.value.filter(x => x.mode !== 'break').slice(0, 6)
   })
 
   // 當前執行任務
@@ -110,26 +109,6 @@ function useMissionList() {
     currentMission.done = true
   }
 
-  onMounted(() => {
-    const missionList = computed(() => store.state.missionList)
-
-    missionList.value.forEach((item, i) => {
-      if ((i + 1) % 4 === 0) {
-        timerList.value.push(item, {
-          title: '休息時間',
-          mode: 'longBreak',
-          done: false
-        })
-      } else {
-        timerList.value.push(item, {
-          title: '休息時間',
-          mode: 'break',
-          done: false
-        })
-      }
-    })
-  })
-
   return {
     timerList,
     stepperList,
@@ -138,12 +117,15 @@ function useMissionList() {
   }
 }
 
-// [ 新增任務 ]
 function useMissionHandler() {
   const missionDialog = ref(false)
   const missionTitle = ref('')
 
-  const missionAdd = () => store.commit('missionAdd', missionTitle.value)
+  const missionAdd = () => {
+    store.commit('missionAdd', missionTitle.value)
+    missionTitle.value = ''
+    missionDialog.value = false
+  }
 
   return { missionDialog, missionTitle, missionAdd }
 }
