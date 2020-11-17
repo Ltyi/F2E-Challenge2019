@@ -1,48 +1,40 @@
 <template>
   <div>
-    <template v-if="items.length">
-      <div v-for="(item, i) in items" :key="i">
-        <div class="flex items-center h-16 relative">
-          <div
-            v-if="i === 0"
-            class="flex items-center justify-center w-10 h-10 border-2 border-red-400 text-red-400 rounded-full mr-5"
-            :class="{ 'current-step': items.length > 1 }"
-          >
-            <fa-icon :icon="['fas', 'play']" class="text-lg ml-1"></fa-icon>
-          </div>
+    <div v-for="(item, i) in items" :key="i">
+      <div class="flex items-center h-16 relative">
+        <div
+          v-if="i === 0"
+          class="flex items-center justify-center w-10 h-10 border-2 border-red-400 text-red-400 rounded-full mr-5"
+          :class="{ 'current-step': items.length > 1 }"
+        >
+          <fa-icon :icon="['fas', 'play']" class="text-lg ml-1"></fa-icon>
+        </div>
 
-          <div
-            v-else
-            class="w-4 h-4 rounded-full bg-red-400 step mr-8"
-            :class="{
-              'step--break': item.mode !== 'focus',
-              'last-step': i === items.length - 1,
-              'bg-red-400': item.mode === 'focus',
-              'bg-green-700': item.mode !== 'focus'
-            }"
-          ></div>
+        <div
+          v-else
+          class="w-4 h-4 rounded-full bg-red-400 step mr-8"
+          :class="{
+            'step--break': item.mode !== 'focus',
+            'last-step': i === items.length - 1,
+            'bg-red-400': item.mode === 'focus',
+            'bg-green-700': item.mode !== 'focus'
+          }"
+        ></div>
 
-          <div
-            :class="{
-              'text-2xl': i === 0,
-              'text-base': i !== 0,
-              'font-light': i !== 0,
-              'font-noto': true,
-              'leading-5': true,
-              'tracking-wide': true
-            }"
-          >
-            {{ item.title }}
-          </div>
+        <div
+          :class="{
+            'text-2xl': i === 0,
+            'text-base': i !== 0,
+            'font-light': i !== 0,
+            'font-noto': true,
+            'leading-5': true,
+            'tracking-wide': true
+          }"
+        >
+          {{ item.title }}
         </div>
       </div>
-    </template>
-
-    <template v-else>
-      <div class="text-base font-noto leading-5 tracking-wide text-gray-400 text-center">
-        目前尚無任務
-      </div>
-    </template>
+    </div>
   </div>
 </template>
 

@@ -1,9 +1,12 @@
 import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
+import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
 
 export default createStore({
   state: {
+    mode: 'focus',
+    isCounting: false,
     missionList: []
   },
 
@@ -12,34 +15,28 @@ export default createStore({
       const mission = {
         id: uuidv4(),
         title: title,
-        mode: 'focus',
-        done: false
+        done: false,
+        date: dayjs().format('YYYY-MM-DD')
       }
 
-      const length = state.missionList.length
-
-      if ((length + 2) % 8 === 0) {
-        state.missionList.push(mission, {
-          title: '休息時間',
-          mode: 'longBreak',
-          done: false
-        })
-      } else {
-        state.missionList.push(mission, {
-          title: '休息時間',
-          mode: 'break',
-          done: false
-        })
-      }
+      state.missionList.push(mission)
     },
 
-    missionRemove(state, id) {
-      const idx = state.missionList.findIndex(item => item.id === id)
-      state.missionList.splice(idx, 1)
+    missionDone(state, id) {
+      const mission = state.missionList.find(item => item.id === id)
+      mission.done = true
+    },
+
+    setIsCounting(state, isCounting) {
+      state.isCounting = isCounting
+    },
+
+    setMode(state, mode) {
+      state.mode = mode
     }
   },
 
   actions: {},
   modules: {},
-  plugins: [createPersistedState()]
+  plugins: [createPersistedState({ paths: ['missionList'] })]
 })

@@ -44,31 +44,26 @@
 </template>
 
 <script setup="props, { emit }">
-import { inject, computed, ref } from 'vue'
+import { inject, computed, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
-  name: 'VStepper',
-
-  props: {
-    mode: {
-      type: String,
-      default: 'focus'
-    }
-  }
+  name: 'VStepper'
 }
 
 const dayjs = inject('dayjs')
+const store = useStore()
 
 export const { timerClass, textClass } = useStyle()
-export const { percent, start, pause, isCounting, countDownFormat } = useTimer()
+export const { mode, percent, start, pause, isCounting, countDownFormat } = useTimer()
 
 // [ SVG 樣式套用 ]
 function useStyle() {
   const timerClass = computed(() => {
     return {
       timer: true,
-      'timer-break': props.break,
-      'timer-focus': !props.break,
+      'timer-break': mode.value === 'break',
+      'timer-focus': mode.value === 'focus',
       'timer--start': isCounting.value
     }
   })
@@ -76,8 +71,8 @@ function useStyle() {
   const textClass = computed(() => {
     return {
       'text-white': isCounting.value,
-      'text-green-900': !isCounting.value && props.break,
-      'text-red-600': !isCounting.value && !props.break
+      'text-green-900': !isCounting.value && mode.value === 'break',
+      'text-red-600': !isCounting.value && mode.value === 'focus'
     }
   })
 
@@ -86,40 +81,37 @@ function useStyle() {
 
 // [ 計時器 ]
 function useTimer() {
-  const modeDuration = () => {
-    switch (props.mode) {
-      case 'break':
-        return 300
-      case 'longBreak':
-        return 900
-      case 'focus':
-        return 10
-      default:
-        return 10
-    }
-  }
+  const mode = computed(() => store.state.mode)
+  const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
-  const percent = computed(() => (100 / modeDuration()) * counter.value) // 進度百分比
+  const percent = computed(() => (100 / duration.value) * counter.value) // 進度百分比
 
   // 進度轉換為 hh:mm 計時器
   const countDownFormat = computed(() => {
-    const current = modeDuration() * 1000 - counter.value * 1000
+    const current = duration.value * 1000 - counter.value * 1000
     const currentDuration = dayjs.duration(current)
 
     return dayjs(currentDuration.asMilliseconds()).format('mm:ss')
   })
 
-  // interval 是否計時中
+  // 監看 interval 是否執行中，將狀態同步到 vuex
+  watch(timer, val => store.commit('setIsCounting', !!val), { immediate: true })
+
   const isCounting = computed(() => {
-    return !!timer.value
+    return store.state.isCounting
   })
 
   const start = () => {
     timer.value = setInterval(() => {
       counter.value++
 
-      if (percent.value === 100) {
+      // 主工作時間結束後轉為短休息模式
+      // 短休息模式結束後重置狀態
+      if (mode.value === 'focus' && percent.value === 100) {
+        store.commit('setMode', 'break')
+        counter.value = 0
+      } else if (mode.value === 'break' && percent.value === 100) {
         emit('mission:done')
         reset()
       }
@@ -135,9 +127,11 @@ function useTimer() {
     clearInterval(timer.value)
     timer.value = null
     counter.value = 0
+    store.commit('setMode', 'focus')
   }
 
   return {
+    mode,
     percent,
     start,
     pause,
@@ -150,7 +144,7 @@ function useTimer() {
 
 <style lang="postcss" scoped>
 .timer {
-  @apply transform -rotate-90 border-3 rounded-full w-full h-full;
+  @apply transform -rotate-90 border-3 rounded-full w-full h-full transition-all duration-500;
   font-size: 8px;
 }
 
