@@ -36,7 +36,15 @@ export default createStore({
     }
   },
 
-  actions: {},
-  modules: {},
+  getters: {
+    missionToday(state) {
+      return state.missionList.filter(x => {
+        const today = dayjs().format('YYYY-MM-DD')
+
+        return x.date === today
+      })
+    }
+  },
+
   plugins: [createPersistedState({ paths: ['missionList'] })]
 })

@@ -25,7 +25,7 @@
               暫停
             </div>
 
-            <div class="cursor-pointer">
+            <div class="cursor-pointer" @click="skip">
               <fa-icon :icon="['fas', 'times']"></fa-icon>
               作廢
             </div>
@@ -55,9 +55,18 @@ const dayjs = inject('dayjs')
 const store = useStore()
 
 export const { timerClass, textClass } = useStyle()
-export const { mode, percent, start, pause, isCounting, countDownFormat } = useTimer()
 
-// [ SVG 樣式套用 ]
+export const {
+  mode,
+  percent,
+  start,
+  pause,
+  skip,
+  isCounting,
+  countDownFormat
+} = useTimer()
+
+// [ functins ]
 function useStyle() {
   const timerClass = computed(() => {
     return {
@@ -79,7 +88,6 @@ function useStyle() {
   return { timerClass, textClass }
 }
 
-// [ 計時器 ]
 function useTimer() {
   const mode = computed(() => store.state.mode)
   const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
@@ -107,7 +115,7 @@ function useTimer() {
       counter.value++
 
       // 主工作時間結束後轉為短休息模式
-      // 短休息模式結束後重置狀態
+      // 短休息模式結束後將任務狀態改為完成後重置狀態
       if (mode.value === 'focus' && percent.value === 100) {
         store.commit('setMode', 'break')
         counter.value = 0
@@ -130,12 +138,17 @@ function useTimer() {
     store.commit('setMode', 'focus')
   }
 
+  const skip = () => {
+    emit('mission:skip')
+    reset()
+  }
+
   return {
     mode,
     percent,
     start,
     pause,
-    reset,
+    skip,
     isCounting,
     countDownFormat
   }

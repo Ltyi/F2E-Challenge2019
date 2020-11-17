@@ -25,7 +25,7 @@
     >
       <div class="w-6/12">
         <div class="text-lg font-noto">今日任務已完成</div>
-        <div class="text-4xl">4/15</div>
+        <div class="text-4xl">{{ doneString }}</div>
       </div>
 
       <div class="w-6/12 flex justify-end">
@@ -38,15 +38,18 @@
       <!-- Timer -->
       <div class="w-full flex justify-center">
         <div v-if="timerList.length" class="w-6/12">
-          <VTimer @mission:done="missionDone(currentMission.id)"></VTimer>
+          <VTimer
+            @mission:done="missionDone(currentMission.id)"
+            @mission:skip="missionDone(currentMission.id)"
+          ></VTimer>
         </div>
 
         <div v-else class="w-6/12 text-center font-noto">請先新增任務</div>
       </div>
 
-      <div class="w-full text-2xl self-end">
+      <div v-if="timerList.length" class="w-full text-2xl self-end font-noto">
         <fa-icon :icon="['fas', 'circle']" class="mr-4"></fa-icon>
-        <span>The thing is doing now</span>
+        <span>{{ currentMission.title }}</span>
       </div>
     </div>
 
@@ -70,7 +73,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
 
 import VStepper from '@/components/VStepper'
@@ -92,13 +95,10 @@ export default {
 const store = useStore()
 const dayjs = inject('dayjs')
 
-// 樣式套用
+export const test = computed(() => store.getters.missionToday)
+
 export const { bgClass } = useStyle()
-
-// 任務列表
-export const { timerList, currentMission } = useMissionList()
-
-// 當前日期及時間
+export const { timerList, currentMission, doneString } = useMissionList()
 export const { currentDate, currentTime } = useCurrentDate()
 
 // 任務處理
@@ -138,12 +138,23 @@ function useMissionList() {
 
   // 當前執行任務
   const currentMission = computed(() => {
-    return timerList.value.find(item => !item.done)
+    return timerList.value[0]
+  })
+
+  // 今日任務已完成 ?/?
+  const missionToday = computed(() => store.getters.missionToday)
+
+  const doneString = computed(() => {
+    const length = missionToday.value.length
+    const doneLength = missionToday.value.filter(x => x.done).length
+
+    return `${doneLength}/${length}`
   })
 
   return {
     timerList,
-    currentMission
+    currentMission,
+    doneString
   }
 }
 
@@ -177,6 +188,11 @@ function useCurrentDate() {
 
   onMounted(() => {
     start()
+  })
+
+  onUnmounted(() => {
+    clearInterval(timer.value)
+    timer.value = null
   })
 
   return { currentDate, currentTime }

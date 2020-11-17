@@ -14,10 +14,8 @@
           v-else
           class="w-4 h-4 rounded-full bg-red-400 step mr-8"
           :class="{
-            'step--break': item.mode !== 'focus',
             'last-step': i === items.length - 1,
-            'bg-red-400': item.mode === 'focus',
-            'bg-green-700': item.mode !== 'focus'
+            'bg-red-400': true
           }"
         ></div>
 
