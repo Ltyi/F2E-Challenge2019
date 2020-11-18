@@ -10,7 +10,14 @@ import './style/main.css'
 import dayjs from './plugins/dayjs'
 import fontAwesome from './plugins/fontAwesome'
 
+// [ components ]
+import BaseBtn from './components/BaseBtn.vue'
+import BaseDialog from './components/BaseDialog.vue'
+
 const app = createApp(App)
+
+app.component('BaseBtn', BaseBtn)
+app.component('BaseDialog', BaseDialog)
 
 app.use(dayjs)
 app.use(fontAwesome)

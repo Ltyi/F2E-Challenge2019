@@ -23,6 +23,7 @@ module.exports = {
       },
       red: {
         base: '#ff0000',
+        ffcdcd: '#ffcdcd',
         100: 'rgba(255,124,124,0.15)',
         200: 'rgba(234,14,14,0.45)',
         300: '#ff7575',
@@ -34,6 +35,7 @@ module.exports = {
         900: '#ba2323'
       },
       green: {
+        base: '#04baa2',
         100: '#e6fdf8',
         200: '#e0fffb',
         300: '#ccfff4',
@@ -43,8 +45,7 @@ module.exports = {
         700: '#35fbd5',
         800: '#5bd2c1',
         900: '#4eb6a8',
-        1000: '#06bca4',
-        1100: '#04baa2'
+        1000: '#06bca4'
       }
     },
     extend: {
@@ -66,7 +67,8 @@ module.exports = {
     }
   },
   variants: {
-    backgroundColor: ['responsive', 'hover', 'focus', 'active', 'group-hover']
+    backgroundColor: ['responsive', 'hover', 'focus', 'active', 'group-hover'],
+    display: ['responsive', 'hover', 'focus', 'group-hover']
   },
   plugins: [
     plugin(({ addUtilities }) => {

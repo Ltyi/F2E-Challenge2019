@@ -1,17 +1,17 @@
 <template>
   <div class="flex h-full">
     <div class="flex flex-col w-4/12 p-16 h-full">
-      <VStepper :items="timerList"></VStepper>
+      <VStepper :items="missionToDoList"></VStepper>
 
       <div class="flex flex-grow justify-center items-center font-noto">
-        <span v-if="!timerList.length" class="text-gray-400">目前尚無任務</span>
+        <span v-if="!missionToDoList.length" class="text-gray-400">目前尚無任務</span>
       </div>
 
       <!-- 增加新任務 -->
       <div class="h-40 p-6 bg-gray-100 rounded-md font-noto">
         <h3
           class="text-lg text-gray-400 cursor-pointer inline-block"
-          @click="missionDialog = true"
+          @click="missionDialog.add = true"
         >
           <span class="mr-3">+</span>
           增加新任務
@@ -31,30 +31,30 @@
       <div class="w-6/12 flex justify-end">
         <div class="text-right">
           <div class="text-lg font-noto">{{ currentDate }}</div>
-          <div class="text-4xl test">{{ currentTime }}</div>
+          <div class="text-4xl">{{ currentTime }}</div>
         </div>
       </div>
 
       <!-- Timer -->
       <div class="w-full flex justify-center">
-        <div v-if="timerList.length" class="w-6/12">
+        <div v-if="missionToDoList.length" class="w-6/12">
           <VTimer
             @mission:done="missionDone(currentMission.id)"
-            @mission:skip="missionDone(currentMission.id)"
+            @mission:skip="missionSkip(currentMission.id)"
           ></VTimer>
         </div>
 
         <div v-else class="w-6/12 text-center font-noto">請先新增任務</div>
       </div>
 
-      <div v-if="timerList.length" class="w-full text-2xl self-end font-noto">
+      <div v-if="missionToDoList.length" class="w-full text-2xl self-end font-noto">
         <fa-icon :icon="['fas', 'circle']" class="mr-4"></fa-icon>
         <span>{{ currentMission.title }}</span>
       </div>
     </div>
 
     <!-- 新增任務 Dialog -->
-    <BaseDialog v-model="missionDialog">
+    <base-dialog v-model="missionDialog.add">
       <div class="font-noto">
         <input
           v-model="missionTitle"
@@ -65,10 +65,10 @@
 
         <div class="flex justify-end">
           <base-btn class="mr-2" color="red" @click="missionAdd">新增任務</base-btn>
-          <base-btn @click="missionDialog = false">取消</base-btn>
+          <base-btn @click="missionDialog.add = false">取消</base-btn>
         </div>
       </div>
-    </BaseDialog>
+    </base-dialog>
   </div>
 </template>
 
@@ -76,43 +76,43 @@
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
 
+import useMissionHandler from '@/composables/useMissionHandler'
+import useMissionList from '@/composables/useMissionList'
+
 import VStepper from '@/components/VStepper'
 import VTimer from '@/components/VTimer'
-import BaseBtn from '@/components/BaseBtn'
-import BaseDialog from '@/components/BaseDialog'
 
 export default {
   name: 'Home',
 
   components: {
     VStepper,
-    VTimer,
-    BaseDialog,
-    BaseBtn
+    VTimer
   }
 }
 
 const store = useStore()
 const dayjs = inject('dayjs')
 
-export const test = computed(() => store.getters.missionToday)
-
-export const { bgClass } = useStyle()
-export const { timerList, currentMission, doneString } = useMissionList()
-export const { currentDate, currentTime } = useCurrentDate()
-
 // 任務處理
 export const {
   missionDialog,
   missionTitle,
   missionAdd,
-  missionDone
+  missionDone,
+  missionSkip
 } = useMissionHandler()
 
-// [ functions ]
+// 任務列表
+export const { missionToDoList, currentMission, doneString } = useMissionList()
+
+export const { bgClass } = useStyle()
+export const { currentDate, currentTime } = useCurrentDate()
+
+// [ Functions ]
 function useStyle() {
-  const isCounting = computed(() => store.state.isCounting)
-  const mode = computed(() => store.state.mode)
+  const isCounting = computed(() => store.state.mission.isCounting)
+  const mode = computed(() => store.mission.state.mode)
 
   const textClass = computed(() => {
     return isCounting.value && mode.value === 'focus' ? 'text-white' : 'text-gray-400'
@@ -128,51 +128,6 @@ function useStyle() {
   })
 
   return { bgClass }
-}
-
-function useMissionList() {
-  // 番茄鐘任務列表
-  const timerList = computed(() => {
-    return store.state.missionList.filter(item => !item.done)
-  })
-
-  // 當前執行任務
-  const currentMission = computed(() => {
-    return timerList.value[0]
-  })
-
-  // 今日任務已完成 ?/?
-  const missionToday = computed(() => store.getters.missionToday)
-
-  const doneString = computed(() => {
-    const length = missionToday.value.length
-    const doneLength = missionToday.value.filter(x => x.done).length
-
-    return `${doneLength}/${length}`
-  })
-
-  return {
-    timerList,
-    currentMission,
-    doneString
-  }
-}
-
-function useMissionHandler() {
-  const missionDialog = ref(false)
-  const missionTitle = ref('')
-
-  const missionAdd = () => {
-    store.commit('missionAdd', missionTitle.value)
-    missionTitle.value = ''
-    missionDialog.value = false
-  }
-
-  const missionDone = id => {
-    store.commit('missionDone', id)
-  }
-
-  return { missionDialog, missionTitle, missionAdd, missionDone }
 }
 
 function useCurrentDate() {

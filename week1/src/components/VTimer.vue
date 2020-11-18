@@ -66,7 +66,7 @@ export const {
   countDownFormat
 } = useTimer()
 
-// [ functins ]
+// [ Functions ]
 function useStyle() {
   const timerClass = computed(() => {
     return {
@@ -89,7 +89,7 @@ function useStyle() {
 }
 
 function useTimer() {
-  const mode = computed(() => store.state.mode)
+  const mode = computed(() => store.state.mission.mode)
   const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
@@ -107,7 +107,7 @@ function useTimer() {
   watch(timer, val => store.commit('setIsCounting', !!val), { immediate: true })
 
   const isCounting = computed(() => {
-    return store.state.isCounting
+    return store.state.mission.isCounting
   })
 
   const start = () => {
@@ -117,7 +117,7 @@ function useTimer() {
       // 主工作時間結束後轉為短休息模式
       // 短休息模式結束後將任務狀態改為完成後重置狀態
       if (mode.value === 'focus' && percent.value === 100) {
-        store.commit('setMode', 'break')
+        store.commit('mission/setMode', 'break')
         counter.value = 0
       } else if (mode.value === 'break' && percent.value === 100) {
         emit('mission:done')
@@ -135,7 +135,7 @@ function useTimer() {
     clearInterval(timer.value)
     timer.value = null
     counter.value = 0
-    store.commit('setMode', 'focus')
+    store.commit('mission/setMode', 'focus')
   }
 
   const skip = () => {

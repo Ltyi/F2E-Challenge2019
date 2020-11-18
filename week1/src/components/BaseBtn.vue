@@ -1,7 +1,7 @@
 <template>
-  <a href="#" :class="btnClasses">
+  <button :class="btnClasses">
     <slot></slot>
-  </a>
+  </button>
 </template>
 
 <script setup="props">
@@ -31,7 +31,7 @@ export const btnClasses = computed(() => {
 
 <style lang="postcss" scoped>
 .btn {
-  @apply px-3 py-1 rounded shadow-2xl transition duration-75 ease-in-out;
+  @apply px-3 py-1 outline-none rounded shadow-2xl transition duration-75 ease-in-out;
 }
 
 .btn--gray {
