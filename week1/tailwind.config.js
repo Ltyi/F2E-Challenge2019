@@ -13,6 +13,7 @@ module.exports = {
     },
     colors: {
       white: '#ffffff',
+      black: '#000000',
       gray: {
         100: '#f9f9f9',
         200: '#e3e3e3',
@@ -46,6 +47,11 @@ module.exports = {
         800: '#5bd2c1',
         900: '#4eb6a8',
         1000: '#06bca4'
+      },
+      yellow: {
+        base: '#ffc02a',
+        100: '#fffabf',
+        200: '#ffe29c'
       }
     },
     extend: {
@@ -63,6 +69,9 @@ module.exports = {
       },
       borderWidth: {
         3: '3px'
+      },
+      backgroundOpacity: {
+        10: '0.1'
       }
     }
   },

@@ -5,7 +5,8 @@ import {
   faListUl,
   faMusic,
   faCircle,
-  faPlus
+  faPlus,
+  faFileExport
 } from '@fortawesome/free-solid-svg-icons'
 import { faStopCircle, faChartBar } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -18,7 +19,8 @@ library.add(
   faChartBar,
   faMusic,
   faCircle,
-  faPlus
+  faPlus,
+  faFileExport
 )
 
 export default {

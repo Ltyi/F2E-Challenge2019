@@ -11,7 +11,7 @@
       <div class="h-40 p-6 bg-gray-100 rounded-md font-noto">
         <h3
           class="text-lg text-gray-400 cursor-pointer inline-block"
-          @click="missionDialog.add = true"
+          @click="dialog.missionAdd = true"
         >
           <span class="mr-3">+</span>
           增加新任務
@@ -39,6 +39,7 @@
       <div class="w-full flex justify-center">
         <div v-if="missionToDoList.length" class="w-6/12">
           <VTimer
+            @mission:start="missionStart(currentMission.id)"
             @mission:done="missionDone(currentMission.id)"
             @mission:skip="missionSkip(currentMission.id)"
           ></VTimer>
@@ -54,31 +55,20 @@
     </div>
 
     <!-- 新增任務 Dialog -->
-    <base-dialog v-model="missionDialog.add">
-      <div class="font-noto">
-        <input
-          v-model="missionTitle"
-          type="text"
-          placeholder="請輸入任務名稱"
-          class="outline-none border-2 rounded px-4 py-2 w-full mb-4"
-        />
-
-        <div class="flex justify-end">
-          <base-btn class="mr-2" color="red" @click="missionAdd">新增任務</base-btn>
-          <base-btn @click="missionDialog.add = false">取消</base-btn>
-        </div>
-      </div>
-    </base-dialog>
+    <MissionAdd v-model="dialog.missionAdd"></MissionAdd>
   </div>
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 
+// 可複用功能
 import useMissionHandler from '@/composables/useMissionHandler'
 import useMissionList from '@/composables/useMissionList'
 
+// 組件
+import MissionAdd from '@/components/mission/MissionAdd'
 import VStepper from '@/components/VStepper'
 import VTimer from '@/components/VTimer'
 
@@ -87,7 +77,8 @@ export default {
 
   components: {
     VStepper,
-    VTimer
+    VTimer,
+    MissionAdd
   }
 }
 
@@ -95,24 +86,20 @@ const store = useStore()
 const dayjs = inject('dayjs')
 
 // 任務處理
-export const {
-  missionDialog,
-  missionTitle,
-  missionAdd,
-  missionDone,
-  missionSkip
-} = useMissionHandler()
+export const { missionStart, missionDone, missionSkip } = useMissionHandler()
 
-// 任務列表
+// 任務列表/樣式
 export const { missionToDoList, currentMission, doneString } = useMissionList()
-
 export const { bgClass } = useStyle()
 export const { currentDate, currentTime } = useCurrentDate()
 
-// [ Functions ]
+// 彈窗控制
+export const dialog = reactive({ missionAdd: false })
+
+// 組件邏輯
 function useStyle() {
   const isCounting = computed(() => store.state.mission.isCounting)
-  const mode = computed(() => store.mission.state.mode)
+  const mode = computed(() => store.state.mission.mode)
 
   const textClass = computed(() => {
     return isCounting.value && mode.value === 'focus' ? 'text-white' : 'text-gray-400'

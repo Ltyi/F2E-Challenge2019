@@ -8,21 +8,41 @@ const state = () => ({
 })
 
 const mutations = {
+  // 任務新增
   missionAdd(state, title) {
     const mission = {
       id: uuidv4(),
+      planID: null,
       title: title,
       done: false,
       skip: false,
-      date: dayjs().format('YYYY-MM-DD')
+      createdDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      startDate: '',
+      endDate: ''
     }
 
     state.missionList.push(mission)
   },
 
+  // 任務匯入
+  missionImport(state, mission) {
+    state.missionList.push(mission)
+  },
+
+  // 任務開始
+  missionStart(state, id) {
+    const mission = state.missionList.find(item => item.id === id)
+
+    if (!mission.startDate) {
+      mission.startDate = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    }
+  },
+
+  // 任務完成
   missionDone(state, id) {
     const mission = state.missionList.find(item => item.id === id)
     mission.done = true
+    mission.endDate = dayjs().format('YYYY-MM-DD HH:mm:ss')
   },
 
   // 任務作廢
@@ -31,15 +51,18 @@ const mutations = {
     mission.skip = true
   },
 
+  // 任務刪除
   missionRemove(state, id) {
     const i = state.missionList.findIndex(item => item.id === id)
     state.missionList.splice(i, 1)
   },
 
+  // 是否計時中
   setIsCounting(state, isCounting) {
     state.isCounting = isCounting
   },
 
+  // 當前模式
   setMode(state, mode) {
     state.mode = mode
   }
@@ -65,8 +88,9 @@ const getters = {
   missionToday(state) {
     return state.missionList.filter(x => {
       const today = dayjs().format('YYYY-MM-DD')
+      const date = dayjs(x.createdDate).format('YYYY-MM-DD')
 
-      return x.date === today
+      return date === today
     })
   }
 }

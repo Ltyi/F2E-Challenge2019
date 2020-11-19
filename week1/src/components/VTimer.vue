@@ -54,8 +54,8 @@ export default {
 const dayjs = inject('dayjs')
 const store = useStore()
 
+// 組件樣式/功能
 export const { timerClass, textClass } = useStyle()
-
 export const {
   mode,
   percent,
@@ -66,7 +66,7 @@ export const {
   countDownFormat
 } = useTimer()
 
-// [ Functions ]
+// 組件邏輯
 function useStyle() {
   const timerClass = computed(() => {
     return {
@@ -90,7 +90,7 @@ function useStyle() {
 
 function useTimer() {
   const mode = computed(() => store.state.mission.mode)
-  const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
+  const duration = computed(() => (mode.value === 'focus' ? 2500 : 300)) // timer 倒數模式 2500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
   const percent = computed(() => (100 / duration.value) * counter.value) // 進度百分比
@@ -104,13 +104,15 @@ function useTimer() {
   })
 
   // 監看 interval 是否執行中，將狀態同步到 vuex
-  watch(timer, val => store.commit('setIsCounting', !!val), { immediate: true })
+  watch(timer, val => store.commit('mission/setIsCounting', !!val), { immediate: true })
 
   const isCounting = computed(() => {
     return store.state.mission.isCounting
   })
 
   const start = () => {
+    emit('mission:start')
+
     timer.value = setInterval(() => {
       counter.value++
 
