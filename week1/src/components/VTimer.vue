@@ -90,7 +90,7 @@ function useStyle() {
 
 function useTimer() {
   const mode = computed(() => store.state.mission.mode)
-  const duration = computed(() => (mode.value === 'focus' ? 2500 : 300)) // timer 倒數模式 2500/300
+  const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
   const percent = computed(() => (100 / duration.value) * counter.value) // 進度百分比
