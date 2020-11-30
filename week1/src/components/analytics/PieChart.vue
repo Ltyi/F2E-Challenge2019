@@ -28,7 +28,6 @@ function useChart() {
   // 圖表資料
   const labels = getLabels()
   const data = getData()
-  console.log(data)
 
   function getLabels() {
     const labels = planList.value.map(item => {
