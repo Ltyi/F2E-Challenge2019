@@ -28,6 +28,7 @@ function useChart() {
   // 圖表資料
   const labels = getLabels()
   const data = getData()
+  console.log(data)
 
   function getLabels() {
     const labels = planList.value.map(item => {
@@ -50,7 +51,9 @@ function useChart() {
   }
 
   function getData() {
-    missionWeekList.value.forEach(x => {
+    const doneList = missionWeekList.value.filter(x => x.done)
+
+    doneList.forEach(x => {
       const idx = labels.findIndex(o => o.id === x.planID)
       const otherIdx = labels.findIndex(o => o.id === '0')
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full font-noto flex flex-col">
+  <div v-if="visible" class="h-full font-noto flex flex-col">
     <div class="flex flex-grow p-16">
       <div class="w-5/12">
         <div class="flex items-center h-10 mb-12">
@@ -41,6 +41,10 @@
       <HorizontalBar></HorizontalBar>
     </div>
   </div>
+
+  <div v-else class="flex items-center justify-center h-full">
+    <div class="text-3xl font-bold text-gray-600">至少完成一項任務後可瀏覽數據</div>
+  </div>
 </template>
 
 <script setup>
@@ -50,6 +54,7 @@ import PieChart from '@/components/analytics/PieChart'
 
 // 可複用功能
 import useMissionList from '@/composables/useMissionList'
+import { computed } from 'vue'
 
 export default {
   name: 'Analytics',
@@ -61,5 +66,6 @@ export default {
   }
 }
 
-export const { doneString, weekDoneString } = useMissionList()
+export const { doneString, weekDoneString, missionWeekList } = useMissionList()
+export const visible = computed(() => missionWeekList.value.filter(x => x.done).length)
 </script>
