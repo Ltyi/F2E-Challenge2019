@@ -90,10 +90,11 @@ function useStyle() {
 
 function useTimer() {
   const mode = computed(() => store.state.mission.mode)
-  const duration = computed(() => (mode.value === 'focus' ? 5 : 5)) // timer 倒數模式 2500/300
+  const duration = computed(() => (mode.value === 'focus' ? 2 : 2)) // timer 倒數模式 1500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
   const percent = computed(() => (100 / duration.value) * counter.value) // 進度百分比
+  const isCounting = computed(() => store.state.mission.isCounting)
 
   // 進度轉換為 hh:mm 計時器
   const countDownFormat = computed(() => {
@@ -106,10 +107,6 @@ function useTimer() {
   // 監看 interval 是否執行中，將狀態同步到 vuex
   watch(timer, val => store.commit('mission/setIsCounting', !!val), { immediate: true })
 
-  const isCounting = computed(() => {
-    return store.state.mission.isCounting
-  })
-
   const start = () => {
     emit('mission:start')
 
@@ -119,10 +116,13 @@ function useTimer() {
       // 主工作時間結束後轉為短休息模式
       // 短休息模式結束後將任務狀態改為完成後重置狀態
       if (mode.value === 'focus' && percent.value === 100) {
-        store.commit('mission/setMode', 'break')
         counter.value = 0
-      } else if (mode.value === 'break' && percent.value === 100) {
         emit('mission:done')
+
+        store.getters['mission/missionToDoList'].length
+          ? store.commit('mission/setMode', 'break')
+          : reset()
+      } else if (mode.value === 'break' && percent.value === 100) {
         reset()
       }
     }, 1000)

@@ -5,7 +5,7 @@
         <fa-icon
           fixed-width
           :icon="['fas', 'list-ul']"
-          class="text-2xl mt-1 mr-6 text-gray-300"
+          class="text-2xl mt-1 mr-6 text-gray-600"
         ></fa-icon>
         <span class="text-3xl font-bold text-gray-600">計畫任務</span>
       </div>

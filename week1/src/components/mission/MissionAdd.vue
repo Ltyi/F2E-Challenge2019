@@ -44,7 +44,10 @@ function useMissionAdd() {
     close()
   }
 
-  const close = () => emit('update:modelValue', false)
+  const close = () => {
+    title.value = ''
+    emit('update:modelValue', false)
+  }
 
   return {
     title,

@@ -26,7 +26,12 @@ const mutations = {
 
   // 任務匯入
   missionImport(state, mission) {
-    state.missionList.push(mission)
+    const obj = {
+      ...mission,
+      id: uuidv4(),
+      createdDate: dayjs().format('YYYY-MM-DD HH:mm:ss')
+    }
+    state.missionList.push(obj)
   },
 
   // 任務開始
@@ -69,28 +74,48 @@ const mutations = {
 }
 
 const getters = {
-  // 已完成任務列表
-  missionDoneList(state) {
-    return state.missionList.filter(x => x.done)
-  },
-
-  // 作廢任務列表
-  missionSkipList(state) {
-    return state.missionList.filter(x => x.skip)
-  },
-
-  // 未完成任務列表
-  missionToDoList(state) {
-    return state.missionList.filter(x => !x.done && !x.skip)
-  },
-
   // 當日任務列表
   missionToday(state) {
     return state.missionList.filter(x => {
       const today = dayjs().format('YYYY-MM-DD')
-      const date = dayjs(x.createdDate).format('YYYY-MM-DD')
+      const createdDate = dayjs(x.createdDate).format('YYYY-MM-DD')
 
-      return date === today
+      return today === createdDate
+    })
+  },
+
+  // 當日已完成任務列表
+  missionDoneList(state, getters) {
+    return getters.missionToday.filter(x => x.done)
+  },
+
+  // 當日作廢任務列表
+  missionSkipList(state, getters) {
+    return getters.missionToday.filter(x => x.skip)
+  },
+
+  // 當日未完成任務列表
+  missionToDoList(state, getters) {
+    return getters.missionToday.filter(x => !x.done && !x.skip)
+  },
+
+  // 所有完成任務列表
+  missionDoneAllList(state) {
+    return state.missionList.filter(x => x.done)
+  },
+
+  // 本週任務列表
+  missionWeekList(state) {
+    const thisWeek = []
+    const start = dayjs().startOf('week')
+
+    for (let i = 0; i < 7; i++) {
+      thisWeek.push(start.add(i, 'd').format('YYYY-MM-DD'))
+    }
+
+    return state.missionList.filter(x => {
+      const createdDate = dayjs(x.createdDate).format('YYYY-MM-DD')
+      return thisWeek.some(d => d === createdDate)
     })
   }
 }
