@@ -1,24 +1,9 @@
-# week1
+# Week-1
 
-## Project setup
-```
-npm install
-```
+## Core
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+- Vue 3.0.2
+- Tailwind CSS 1.9.x
+## Layout
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[edith.hsu](https://challenge.thef2e.com/user/1600?schedule=2507#works-2507)
