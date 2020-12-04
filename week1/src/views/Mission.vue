@@ -151,7 +151,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { reactive } from 'vue'
 import { useStore } from 'vuex'
 
@@ -172,33 +172,43 @@ export default {
     PlanAdd,
     MissionAdd,
     PlanMissionAdd
+  },
+
+  setup() {
+    const store = useStore()
+
+    // 彈窗控制
+    const dialog = reactive({
+      planAdd: false,
+      missionAdd: false,
+      planMissionAdd: { show: false, planID: '' }
+    })
+
+    // 任務列表/處理
+    const { missionImport, missionRemove } = useMissionHandler()
+    const { missionToDoList, missionDoneList, missionSkipList } = useMissionList()
+
+    // 計畫列表
+    const { planList } = usePlanList(dialog, store)
+    const { planRemove, planMissionAdd, planMissionRemove } = usePlanHandler()
+
+    return {
+      dialog,
+      missionImport,
+      missionRemove,
+      missionToDoList,
+      missionDoneList,
+      missionSkipList,
+      planList,
+      planRemove,
+      planMissionAdd,
+      planMissionRemove
+    }
   }
 }
 
-const store = useStore()
-
-// 彈窗控制
-export const dialog = reactive({
-  planAdd: false,
-  missionAdd: false,
-  planMissionAdd: { show: false, planID: '' }
-})
-
-// 任務列表/處理
-export const { missionImport, missionRemove } = useMissionHandler()
-export const { missionToDoList, missionDoneList, missionSkipList } = useMissionList()
-
-// 計畫列表
-export const { planList } = usePlanList()
-export const {
-  planRemove,
-  planMissionAdd,
-  planMissionExport,
-  planMissionRemove
-} = usePlanHandler()
-
 // 組件功能
-function usePlanHandler() {
+function usePlanHandler(dialog, store) {
   const planRemove = planID => store.commit('plans/planRemove', planID)
 
   const planMissionAdd = planID => {
@@ -215,7 +225,6 @@ function usePlanHandler() {
   return {
     planRemove,
     planMissionAdd,
-    planMissionExport,
     planMissionRemove
   }
 }

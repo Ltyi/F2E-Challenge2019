@@ -37,7 +37,7 @@
   </transition>
 </template>
 
-<script setup="props, { emit }">
+<script>
 export default {
   name: 'BaseDialog',
 

@@ -47,7 +47,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import VerticalBar from '@/components/analytics/VerticalBar'
 import HorizontalBar from '@/components/analytics/HorizontalBar'
 import PieChart from '@/components/analytics/PieChart'
@@ -63,9 +63,17 @@ export default {
     VerticalBar,
     HorizontalBar,
     PieChart
+  },
+
+  setup() {
+    const { doneString, weekDoneString, missionWeekList } = useMissionList()
+    const visible = computed(() => missionWeekList.value.filter(x => x.done).length)
+
+    return {
+      doneString,
+      weekDoneString,
+      visible
+    }
   }
 }
-
-export const { doneString, weekDoneString, missionWeekList } = useMissionList()
-export const visible = computed(() => missionWeekList.value.filter(x => x.done).length)
 </script>

@@ -20,28 +20,32 @@
   </div>
 </template>
 
-<script setup>
+<script>
 export default {
-  name: 'TheSidebar'
-}
+  name: 'TheSidebar',
 
-export const list = [
-  {
-    icon: ['fas', 'list-ul'],
-    color: 'bg-red-800',
-    path: '/mission'
-  },
-  {
-    icon: ['far', 'chart-bar'],
-    color: 'bg-red-600',
-    path: '/analytics'
-  },
-  {
-    icon: ['fas', 'music'],
-    color: 'bg-red-500',
-    path: 'rington'
+  setup() {
+    const list = [
+      {
+        icon: ['fas', 'list-ul'],
+        color: 'bg-red-800',
+        path: '/mission'
+      },
+      {
+        icon: ['far', 'chart-bar'],
+        color: 'bg-red-600',
+        path: '/analytics'
+      },
+      {
+        icon: ['fas', 'music'],
+        color: 'bg-red-500',
+        path: 'rington'
+      }
+    ]
+
+    return { list }
   }
-]
+}
 </script>
 
 <style lang="postcss" scoped>

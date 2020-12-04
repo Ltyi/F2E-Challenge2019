@@ -52,33 +52,42 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref } from 'vue'
 
 export default {
-  name: 'Rington'
+  name: 'Rington',
+
+  setup() {
+    const ringFoucs = ref([
+      { title: 'Default', value: 0 },
+      { title: 'Test', value: 1 },
+      { title: 'Test', value: 2 },
+      { title: 'Test', value: 3 },
+      { title: 'Test', value: 4 },
+      { title: 'Test', value: 5 }
+    ])
+
+    const ringBreak = ref([
+      { title: 'Default', value: 0 },
+      { title: 'Test', value: 1 },
+      { title: 'Test', value: 2 },
+      { title: 'Test', value: 3 },
+      { title: 'Test', value: 4 },
+      { title: 'Test', value: 5 }
+    ])
+
+    const focusSelected = ref(0)
+    const breakSelected = ref(0)
+
+    return {
+      ringFoucs,
+      ringBreak,
+      focusSelected,
+      breakSelected
+    }
+  }
 }
-
-export const ringFoucs = ref([
-  { title: 'Default', value: 0 },
-  { title: 'Test', value: 1 },
-  { title: 'Test', value: 2 },
-  { title: 'Test', value: 3 },
-  { title: 'Test', value: 4 },
-  { title: 'Test', value: 5 }
-])
-
-export const ringBreak = ref([
-  { title: 'Default', value: 0 },
-  { title: 'Test', value: 1 },
-  { title: 'Test', value: 2 },
-  { title: 'Test', value: 3 },
-  { title: 'Test', value: 4 },
-  { title: 'Test', value: 5 }
-])
-
-export const focusSelected = ref(0)
-export const breakSelected = ref(0)
 </script>
 
 <style scoped>

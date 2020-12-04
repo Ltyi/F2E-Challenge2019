@@ -4,7 +4,7 @@
   </button>
 </template>
 
-<script setup="props">
+<script>
 import { computed } from 'vue'
 
 export default {
@@ -16,17 +16,21 @@ export default {
       default: 'gray',
       required: false
     }
+  },
+
+  setup(props) {
+    const btnClasses = computed(() => {
+      const color = `btn--${props.color}`
+
+      return {
+        btn: true,
+        [color]: true
+      }
+    })
+
+    return { btnClasses }
   }
 }
-
-export const btnClasses = computed(() => {
-  const color = `btn--${props.color}`
-
-  return {
-    btn: true,
-    [color]: true
-  }
-})
 </script>
 
 <style lang="postcss" scoped>

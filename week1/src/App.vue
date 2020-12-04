@@ -16,10 +16,14 @@
   </div>
 </template>
 
-<script setup>
-export { default as TheSidebar } from '@/components/TheSidebar'
+<script>
+import TheSidebar from '@/components/TheSidebar'
 
 export default {
-  name: 'App'
+  name: 'App',
+
+  components: {
+    TheSidebar
+  }
 }
 </script>

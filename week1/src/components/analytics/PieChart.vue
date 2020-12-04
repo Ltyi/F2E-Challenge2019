@@ -2,7 +2,7 @@
   <canvas ref="ctx" width="100" height="100"></canvas>
 </template>
 
-<script setup>
+<script>
 import { onMounted, ref } from 'vue'
 import Chart from 'chart.js'
 
@@ -11,17 +11,21 @@ import useMissionList from '@/composables/useMissionList'
 import usePlanList from '@/composables/usePlanList'
 
 export default {
-  name: 'PieChart'
+  name: 'PieChart',
+
+  setup() {
+    // 任務完成列表/計畫列表
+    const { missionWeekList } = useMissionList()
+    const { planList } = usePlanList()
+
+    // 圖表
+    const { ctx } = useChart(planList, missionWeekList)
+
+    return { ctx }
+  }
 }
 
-// 任務完成列表/計畫列表
-const { missionWeekList } = useMissionList()
-const { planList } = usePlanList()
-
-// 圖表
-export const { ctx } = useChart()
-
-function useChart() {
+function useChart(planList, missionWeekList) {
   const ctx = ref(null)
   const chart = ref(null)
 

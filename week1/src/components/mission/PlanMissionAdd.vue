@@ -16,7 +16,7 @@
   </base-dialog>
 </template>
 
-<script setup="props, { emit }">
+<script>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 
@@ -31,15 +31,22 @@ export default {
     }
   },
 
-  emits: ['update:modelValue', 'update:planID']
+  emits: ['update:modelValue', 'update:planID'],
+
+  setup(props, { emit }) {
+    const store = useStore()
+    const { title, add, close } = usePlanMissionAdd(store, props, emit)
+
+    return {
+      title,
+      add,
+      close
+    }
+  }
 }
 
-const store = useStore()
-
-export const { title, add, close } = usePlanMissionAdd()
-
 // 組件功能
-function usePlanMissionAdd() {
+function usePlanMissionAdd(store, props, emit) {
   const title = ref('')
 
   const add = () => {

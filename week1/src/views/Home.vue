@@ -59,7 +59,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { computed, inject, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 
@@ -79,25 +79,40 @@ export default {
     VStepper,
     VTimer,
     MissionAdd
+  },
+
+  setup() {
+    const store = useStore()
+    const dayjs = inject('dayjs')
+
+    // 任務處理
+    const { missionStart, missionDone, missionSkip } = useMissionHandler()
+
+    // 任務列表/樣式
+    const { missionToDoList, currentMission, doneString } = useMissionList()
+    const { bgClass } = useStyle(store)
+    const { currentDate, currentTime } = useCurrentDate(dayjs)
+
+    // 彈窗控制
+    const dialog = reactive({ missionAdd: false })
+
+    return {
+      missionStart,
+      missionDone,
+      missionSkip,
+      missionToDoList,
+      currentMission,
+      doneString,
+      bgClass,
+      currentDate,
+      currentTime,
+      dialog
+    }
   }
 }
 
-const store = useStore()
-const dayjs = inject('dayjs')
-
-// 任務處理
-export const { missionStart, missionDone, missionSkip } = useMissionHandler()
-
-// 任務列表/樣式
-export const { missionToDoList, currentMission, doneString } = useMissionList()
-export const { bgClass } = useStyle()
-export const { currentDate, currentTime } = useCurrentDate()
-
-// 彈窗控制
-export const dialog = reactive({ missionAdd: false })
-
 // 組件邏輯
-function useStyle() {
+function useStyle(store) {
   const isCounting = computed(() => store.state.mission.isCounting)
   const mode = computed(() => store.state.mission.mode)
 
@@ -117,7 +132,7 @@ function useStyle() {
   return { bgClass }
 }
 
-function useCurrentDate() {
+function useCurrentDate(dayjs) {
   const timer = ref(null) // interval
   const currentDate = computed(() => dayjs().format('YYYY-MM-DD'))
   const currentTime = ref('') // 當前時間

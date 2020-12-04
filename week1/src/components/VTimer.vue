@@ -43,31 +43,41 @@
   </div>
 </template>
 
-<script setup="props, { emit }">
+<script>
 import { inject, computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
-  name: 'VStepper'
+  name: 'VStepper',
+
+  setup(props, { emit }) {
+    const dayjs = inject('dayjs')
+    const store = useStore()
+
+    // 組件樣式/功能
+    const { mode, percent, start, pause, skip, isCounting, countDownFormat } = useTimer(
+      dayjs,
+      store,
+      emit
+    )
+    const { timerClass, textClass } = useStyle(mode, isCounting)
+
+    return {
+      timerClass,
+      textClass,
+      mode,
+      percent,
+      start,
+      pause,
+      skip,
+      isCounting,
+      countDownFormat
+    }
+  }
 }
 
-const dayjs = inject('dayjs')
-const store = useStore()
-
-// 組件樣式/功能
-export const { timerClass, textClass } = useStyle()
-export const {
-  mode,
-  percent,
-  start,
-  pause,
-  skip,
-  isCounting,
-  countDownFormat
-} = useTimer()
-
 // 組件邏輯
-function useStyle() {
+function useStyle(mode, isCounting) {
   const timerClass = computed(() => {
     return {
       timer: true,
@@ -88,7 +98,7 @@ function useStyle() {
   return { timerClass, textClass }
 }
 
-function useTimer() {
+function useTimer(dayjs, store, emit) {
   const mode = computed(() => store.state.mission.mode)
   const duration = computed(() => (mode.value === 'focus' ? 2 : 2)) // timer 倒數模式 1500/300
   const timer = ref(null) // interval

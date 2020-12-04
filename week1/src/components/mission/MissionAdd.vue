@@ -16,7 +16,7 @@
   </base-dialog>
 </template>
 
-<script setup="props, { emit }">
+<script>
 import { ref } from 'vue'
 
 // 可複用功能
@@ -29,14 +29,23 @@ export default {
     modelValue: Boolean
   },
 
-  emits: ['update:modelValue']
+  emits: ['update:modelValue'],
+
+  setup(props, { emit }) {
+    const { missionAdd } = useMissionHandler()
+    const { title, add, close } = useMissionAdd(missionAdd, emit)
+
+    return {
+      missionAdd,
+      title,
+      add,
+      close
+    }
+  }
 }
 
-export const { missionAdd } = useMissionHandler()
-export const { title, add, close } = useMissionAdd()
-
 // 組件功能
-function useMissionAdd() {
+function useMissionAdd(missionAdd, emit) {
   const title = ref('')
 
   const add = () => {

@@ -2,7 +2,7 @@
   <canvas ref="ctx" width="400" height="100"></canvas>
 </template>
 
-<script setup>
+<script>
 import { inject, onMounted, ref } from 'vue'
 import Chart from 'chart.js'
 
@@ -10,19 +10,22 @@ import Chart from 'chart.js'
 import useMissionList from '@/composables/useMissionList'
 
 export default {
-  name: 'HorizontalBar'
+  name: 'HorizontalBar',
+
+  setup() {
+    const dayjs = inject('dayjs')
+
+    // 任務完成列表
+    const { missionDoneAllList } = useMissionList()
+
+    // 圖表
+    const { ctx } = useChart(dayjs, missionDoneAllList)
+
+    return { ctx }
+  }
 }
 
-// dayjs
-const dayjs = inject('dayjs')
-
-// 任務完成列表
-const { missionDoneAllList } = useMissionList()
-
-// 圖表
-export const { ctx } = useChart()
-
-function useChart() {
+function useChart(dayjs, missionDoneAllList) {
   const ctx = ref(null)
   const chart = ref(null)
 

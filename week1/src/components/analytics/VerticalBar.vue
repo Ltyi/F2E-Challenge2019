@@ -2,7 +2,7 @@
   <canvas ref="ctx" width="400" height="100"></canvas>
 </template>
 
-<script setup>
+<script>
 import { inject, onMounted, ref } from 'vue'
 import Chart from 'chart.js'
 
@@ -10,16 +10,19 @@ import Chart from 'chart.js'
 import useMissionList from '@/composables/useMissionList'
 
 export default {
-  name: 'VerticalBar'
+  name: 'VerticalBar',
+
+  setup() {
+    const dayjs = inject('dayjs')
+
+    const { missionWeekList } = useMissionList()
+    const { ctx } = useChart(dayjs, missionWeekList)
+
+    return { ctx }
+  }
 }
 
-// dayjs
-const dayjs = inject('dayjs')
-
-const { missionWeekList } = useMissionList()
-export const { ctx } = useChart()
-
-function useChart() {
+function useChart(dayjs, missionWeekList) {
   const ctx = ref(null)
   const chart = ref(null)
 

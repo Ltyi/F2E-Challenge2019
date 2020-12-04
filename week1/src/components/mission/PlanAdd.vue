@@ -30,7 +30,7 @@
   </base-dialog>
 </template>
 
-<script setup="props, { emit }">
+<script>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 
@@ -41,15 +41,24 @@ export default {
     modelValue: Boolean
   },
 
-  emits: ['update:modelValue']
+  emits: ['update:modelValue'],
+
+  setup(props, { emit }) {
+    const store = useStore()
+    const { title, color, activeClass, add, close } = usePlanAdd(store, emit)
+
+    return {
+      title,
+      color,
+      activeClass,
+      add,
+      close
+    }
+  }
 }
 
-const store = useStore()
-
-export const { title, color, activeClass, add, close } = usePlanAdd()
-
 // 組件功能
-function usePlanAdd() {
+function usePlanAdd(store, emit) {
   const title = ref('')
   const color = ref('yellow')
   const activeClass = { 'border-2': true, 'border-gray-500': true }
