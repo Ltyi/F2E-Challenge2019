@@ -13,21 +13,20 @@ export default {
   name: 'HorizontalBar',
 
   setup() {
-    const dayjs = inject('dayjs')
-
-    // 任務完成列表
-    const { missionDoneAllList } = useMissionList()
-
-    // 圖表
-    const { ctx } = useChart(dayjs, missionDoneAllList)
+    // 圖表處理
+    const { ctx } = useChart()
 
     return { ctx }
   }
 }
 
-function useChart(dayjs, missionDoneAllList) {
+function useChart() {
+  const dayjs = inject('dayjs')
   const ctx = ref(null)
   const chart = ref(null)
+
+  // 任務完成列表
+  const { missionDoneAllList } = useMissionList()
 
   // 圖表資料
   const labels = getLabels()

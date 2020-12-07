@@ -50,16 +50,14 @@ import { useStore } from 'vuex'
 export default {
   name: 'VStepper',
 
-  setup(props, { emit }) {
-    const dayjs = inject('dayjs')
-    const store = useStore()
+  emits: ['mission:start', 'mission:done', 'mission:skip'],
 
+  setup(props, { emit }) {
     // 組件樣式/功能
     const { mode, percent, start, pause, skip, isCounting, countDownFormat } = useTimer(
-      dayjs,
-      store,
       emit
     )
+
     const { timerClass, textClass } = useStyle(mode, isCounting)
 
     return {
@@ -98,9 +96,12 @@ function useStyle(mode, isCounting) {
   return { timerClass, textClass }
 }
 
-function useTimer(dayjs, store, emit) {
+function useTimer(emit) {
+  const dayjs = inject('dayjs')
+  const store = useStore()
+
   const mode = computed(() => store.state.mission.mode)
-  const duration = computed(() => (mode.value === 'focus' ? 2 : 2)) // timer 倒數模式 1500/300
+  const duration = computed(() => (mode.value === 'focus' ? 1500 : 300)) // timer 倒數模式 1500/300
   const timer = ref(null) // interval
   const counter = ref(0) // 目前執行秒數
   const percent = computed(() => (100 / duration.value) * counter.value) // 進度百分比

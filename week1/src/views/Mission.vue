@@ -185,11 +185,11 @@ export default {
     })
 
     // 任務列表/處理
-    const { missionImport, missionRemove } = useMissionHandler()
+    const { missionImport, missionRemove } = useMissionHandler(dialog, store)
     const { missionToDoList, missionDoneList, missionSkipList } = useMissionList()
 
     // 計畫列表
-    const { planList } = usePlanList(dialog, store)
+    const { planList } = usePlanList()
     const { planRemove, planMissionAdd, planMissionRemove } = usePlanHandler()
 
     return {

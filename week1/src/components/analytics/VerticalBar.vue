@@ -13,16 +13,16 @@ export default {
   name: 'VerticalBar',
 
   setup() {
-    const dayjs = inject('dayjs')
-
-    const { missionWeekList } = useMissionList()
-    const { ctx } = useChart(dayjs, missionWeekList)
+    const { ctx } = useChart()
 
     return { ctx }
   }
 }
 
-function useChart(dayjs, missionWeekList) {
+function useChart() {
+  const dayjs = inject('dayjs')
+  const { missionWeekList } = useMissionList()
+
   const ctx = ref(null)
   const chart = ref(null)
 

@@ -44,8 +44,7 @@ export default {
   emits: ['update:modelValue'],
 
   setup(props, { emit }) {
-    const store = useStore()
-    const { title, color, activeClass, add, close } = usePlanAdd(store, emit)
+    const { title, color, activeClass, add, close } = usePlanAdd(emit)
 
     return {
       title,
@@ -58,7 +57,9 @@ export default {
 }
 
 // 組件功能
-function usePlanAdd(store, emit) {
+function usePlanAdd(emit) {
+  const store = useStore()
+
   const title = ref('')
   const color = ref('yellow')
   const activeClass = { 'border-2': true, 'border-gray-500': true }

@@ -14,18 +14,18 @@ export default {
   name: 'PieChart',
 
   setup() {
-    // 任務完成列表/計畫列表
-    const { missionWeekList } = useMissionList()
-    const { planList } = usePlanList()
-
     // 圖表
-    const { ctx } = useChart(planList, missionWeekList)
+    const { ctx } = useChart()
 
     return { ctx }
   }
 }
 
-function useChart(planList, missionWeekList) {
+function useChart() {
+  // 任務完成列表/計畫列表
+  const { missionWeekList } = useMissionList()
+  const { planList } = usePlanList()
+
   const ctx = ref(null)
   const chart = ref(null)
 

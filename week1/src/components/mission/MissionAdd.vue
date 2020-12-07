@@ -32,11 +32,9 @@ export default {
   emits: ['update:modelValue'],
 
   setup(props, { emit }) {
-    const { missionAdd } = useMissionHandler()
-    const { title, add, close } = useMissionAdd(missionAdd, emit)
+    const { title, add, close } = useMissionAdd(emit)
 
     return {
-      missionAdd,
       title,
       add,
       close
@@ -45,7 +43,8 @@ export default {
 }
 
 // 組件功能
-function useMissionAdd(missionAdd, emit) {
+function useMissionAdd(emit) {
+  const { missionAdd } = useMissionHandler()
   const title = ref('')
 
   const add = () => {

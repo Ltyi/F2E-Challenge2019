@@ -34,8 +34,7 @@ export default {
   emits: ['update:modelValue', 'update:planID'],
 
   setup(props, { emit }) {
-    const store = useStore()
-    const { title, add, close } = usePlanMissionAdd(store, props, emit)
+    const { title, add, close } = usePlanMissionAdd(props, emit)
 
     return {
       title,
@@ -46,7 +45,8 @@ export default {
 }
 
 // 組件功能
-function usePlanMissionAdd(store, props, emit) {
+function usePlanMissionAdd(props, emit) {
+  const store = useStore()
   const title = ref('')
 
   const add = () => {

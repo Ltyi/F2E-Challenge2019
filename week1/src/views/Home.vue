@@ -133,12 +133,12 @@ function useStyle(store) {
 }
 
 function useCurrentDate(dayjs) {
-  const timer = ref(null) // interval
+  let timer = null // interval
   const currentDate = computed(() => dayjs().format('YYYY-MM-DD'))
   const currentTime = ref('') // 當前時間
 
   const start = () => {
-    timer.value = setInterval(() => {
+    timer = setInterval(() => {
       currentTime.value = dayjs().format('HH:mm')
     })
   }
@@ -148,8 +148,8 @@ function useCurrentDate(dayjs) {
   })
 
   onUnmounted(() => {
-    clearInterval(timer.value)
-    timer.value = null
+    clearInterval(timer)
+    timer = null
   })
 
   return { currentDate, currentTime }
