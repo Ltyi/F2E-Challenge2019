@@ -3,14 +3,15 @@ module.exports = {
   env: {
     node: true
   },
-  extends: ["plugin:vue/vue3-recommended", "@vue/standard"],
+  extends: ['plugin:vue/vue3-recommended', '@vue/standard'],
   parserOptions: {
-    parser: "babel-eslint"
+    parser: 'babel-eslint'
   },
   rules: {
-    "space-before-function-paren": ["error", "never"],
-    "vue/max-attributes-per-line": [
-      "error",
+    'vue/html-self-closing': 'off',
+    'space-before-function-paren': ['error', 'never'],
+    'vue/max-attributes-per-line': [
+      'error',
       {
         singleline: 2,
         multiline: {
@@ -19,7 +20,7 @@ module.exports = {
         }
       }
     ],
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off"
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   }
-};
+}
