@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="select-none border-gray" :class="{ 'border-t': fileName === 'S13' }">
     <img :src="imageSrc">
   </div>
 </template>

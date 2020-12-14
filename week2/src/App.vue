@@ -1,6 +1,6 @@
 <template>
-  <div class="flex">
-    <main class="flex flex-col flex-grow relative min-h-screen">
+  <div class="flex font-lato">
+    <main class="flex flex-col flex-grow relative min-h-screen bg-gray">
       <router-view />
     </main>
   </div>

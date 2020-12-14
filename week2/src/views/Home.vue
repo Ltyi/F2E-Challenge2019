@@ -1,16 +1,48 @@
 <template>
-  <div class="flex flex-col h-full bg-coolGray-200">
-    <div class="flex">
+  <div class="container mx-auto flex flex-col h-full">
+    <div class="flex justify-between my-8">
+      <div
+        v-for="(deck, deckIdx) in tempDeck"
+        :key="deckIdx"
+        class="flex flex-col items-center"
+      >
+        <div class="w-card h-card rounded-md border border-white">
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center justify-center">
+        <img :src="require('@/assets/kings/king_happy.png')" class="w-king">
+        <div class="tracking-widest text-black font-bold text-sm">
+          FREECELL
+        </div>
+      </div>
+
+      <div
+        v-for="(deck, deckIdx) in orderDeck"
+        :key="deckIdx"
+        class="flex flex-col items-center"
+      >
+        <div
+          class="w-card h-card rounded-md bg-white opacity-60 bg-no-repeat bg-center bg-35"
+          :class="{
+            'bg-S': deckIdx === 0,
+            'bg-H': deckIdx === 1,
+            'bg-D': deckIdx === 2,
+            'bg-C': deckIdx === 3
+          }"
+        >
+        </div>
+      </div>
     </div>
 
-    <div class="flex">
+    <div class="flex justify-between h-full">
       <div
         v-for="(deck, deckIdx) in unOrderDeck"
         :key="deckIdx"
-        class="w-2/4"
+        class="flex flex-col items-center"
       >
         <draggable
-          class="flex flex-col items-center relative h-full"
+          class="relative h-full w-card"
           :list="deck"
           :group="{ name: 'unOrder' }"
           :sort="false"
@@ -27,8 +59,8 @@
             <VCard
               :file-name="element.fileName"
               :style="{ top: `${index * 35}px` }"
-              class="absolute mx-auto w-32"
-              :class="{ 'disabled-drag': element.disabled }"
+              class="absolute mx-auto"
+              :class="{ 'disabled-drag': element.disabled, 'cursor-pointer': !element.disabled }"
             ></VCard>
           </template>
         </draggable>
@@ -43,11 +75,6 @@ import draggable from 'vuedraggable'
 
 // 組件
 import VCard from '@/components/VCard'
-
-/**
- * 拖曳時，隱藏 dragging=true 後面所有牌 opacity = 0
- * 自定義拖曳時的 style
- */
 
 export default {
   name: 'Home',
