@@ -16,7 +16,10 @@ module.exports = {
         king: '60px'
       },
       height: {
-        card: '145px'
+        card: '143px'
+      },
+      borderWidth: {
+        card: '0.5px'
       },
       fontFamily: {
         lato: ['Lato', 'sans-serif']

@@ -6,7 +6,28 @@
         :key="deckIdx"
         class="flex flex-col items-center"
       >
-        <div class="w-card h-card rounded-md border border-white">
+        <div class="w-card h-card relative">
+          <div class="absolute w-full h-full top-0 left-0 rounded-md border-2 border-white"></div>
+
+          <draggable
+            class="absolute w-full h-full"
+            :list="deck"
+            :group="{ name: 'deck' }"
+            :sort="false"
+            item-key="fileName"
+            :force-fallback="true"
+            :fallback-on-body="true"
+            :move="move"
+            @end="end"
+          >
+            <template #item="{ element, index }">
+              <VCard
+                :file-name="element.fileName"
+                :style="{ top: `${index * 35}px` }"
+                class="cursor-pointer"
+              ></VCard>
+            </template>
+          </draggable>
         </div>
       </div>
 
@@ -18,19 +39,39 @@
       </div>
 
       <div
-        v-for="(deck, deckIdx) in orderDeck"
-        :key="deckIdx"
+        v-for="(deck, key) in orderDeck"
+        :key="key"
         class="flex flex-col items-center"
       >
-        <div
-          class="w-card h-card rounded-md bg-white opacity-60 bg-no-repeat bg-center bg-35"
-          :class="{
-            'bg-S': deckIdx === 0,
-            'bg-H': deckIdx === 1,
-            'bg-D': deckIdx === 2,
-            'bg-C': deckIdx === 3
-          }"
-        >
+        <div class="w-card h-card relative">
+          <div
+            class="absolute w-full h-full top-0 left-0 rounded-md bg-white opacity-60 bg-no-repeat bg-center bg-35"
+            :class="{
+              'bg-S': key === 'S',
+              'bg-H': key === 'H',
+              'bg-D': key === 'D',
+              'bg-C': key === 'C'
+            }"
+          ></div>
+
+          <draggable
+            class="absolute w-full h-full"
+            :list="deck"
+            :group="{ name: 'deck' }"
+            :sort="false"
+            item-key="fileName"
+            :force-fallback="true"
+            :fallback-on-body="true"
+            :move="move"
+            @end="end"
+          >
+            <template #item="{ element }">
+              <VCard
+                :file-name="element.fileName"
+                class="absolute top-0 left-0 cursor-pointer"
+              ></VCard>
+            </template>
+          </draggable>
         </div>
       </div>
     </div>
@@ -44,7 +85,7 @@
         <draggable
           class="relative h-full w-card"
           :list="deck"
-          :group="{ name: 'unOrder' }"
+          :group="{ name: 'deck' }"
           :sort="false"
           item-key="fileName"
           filter=".disabled-drag"
@@ -157,8 +198,6 @@ export default {
     }
 
     const add = (e, targetList) => {
-      console.log('add', e)
-
       // 來源牌組
       const sourceList = unOrderDeck[onDragSource.deckIdx]
       const sourceLength = sourceList.length
@@ -179,6 +218,10 @@ export default {
     const end = e => {
       handleCardDisabled()
 
+      // 初始化拖曳中牌組
+      onDragSource.cardIdx = null
+      onDragSource.deckIdx = null
+
       // 結束拖曳時將原先隱藏的卡片恢復顯示
       e.from.children.forEach(item => {
         item.style.opacity = '1'
@@ -191,20 +234,50 @@ export default {
 
       const sourceColor = source.element.color
       const sourceNumber = source.element.number
+      const sourceType = source.element.type
 
-      const targetColor = target.element.color
-      const targetNumber = target.element.number
+      /**
+       * 目標若為 unOrderDeck
+       * 若 target List 跟原本移除的相同則直接允許
+       * 檢查未排序牌組間移動時比對牌色是否不同、數字是否遞減
+       */
+      if (unOrderDeck.includes(target.list)) {
+        const targetColor = target.element.color
+        const targetNumber = target.element.number
 
-      // Target List 跟原本移除的相同則允許
-      if (target.list === unOrderDeck[onDragSource.deckIdx]) {
-        return 1
+        if (target.list === unOrderDeck[onDragSource.deckIdx]) {
+          return 1
+        }
+
+        if (sourceColor === targetColor || sourceNumber !== targetNumber - 1) {
+          return false
+        } else {
+          return 1
+        }
       }
 
-      // 比對牌色/數字
-      if (sourceColor === targetColor || sourceNumber !== targetNumber - 1) {
-        return false
-      } else {
-        return 1
+      /**
+       * 目標若為 tempDeck
+       * 檢查目標陣列長度是否小於 1
+       */
+      if (tempDeck.includes(target.list)) {
+        return target.list.length < 1 ? 1 : false
+      }
+
+      /**
+       * 目標若為 orderDeck
+       * 花色必須相同、號碼必須遞增
+       */
+      for (const [key, value] of Object.entries(orderDeck)) {
+        let targetNumber = 0
+
+        if (target.list.length) {
+          targetNumber = target.element.number
+        }
+
+        if (value === target.list) {
+          return sourceType === key && sourceNumber === targetNumber + 1 ? 1 : false
+        }
       }
     }
 
@@ -232,9 +305,14 @@ export default {
 function useDeal() {
   const _ = inject('_')
 
-  const tempDeck = reactive([[], [], [], []])
-  const orderDeck = reactive([[], [], [], []])
   const unOrderDeck = reactive([[], [], [], [], [], [], [], []])
+  const tempDeck = reactive([[], [], [], []])
+  const orderDeck = reactive({
+    S: [],
+    H: [],
+    D: [],
+    C: []
+  })
   const types = ['S', 'H', 'D', 'C']
 
   let cards = []
@@ -246,6 +324,7 @@ function useDeal() {
 
       cards.push({
         fileName,
+        type: item,
         color: item === 'S' || item === 'C' ? 'black' : 'red',
         number: i + 1,
         disabled: true
@@ -274,7 +353,7 @@ function useDeal() {
 // function useDrag() {}
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 /* [draggable="true"] {
   user-select: none;
 } */
