@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto flex flex-col h-full">
+  <div class="container mx-auto flex flex-col justify-between h-full">
     <div class="flex justify-between my-8">
       <div
         v-for="(deck, deckIdx) in tempDeck"
@@ -19,16 +19,16 @@
             item-key="fileName"
             :force-fallback="true"
             :fallback-on-body="true"
-            :move="move"
+            :move="dragMove"
             @start="onDrag()"
-            @end="end"
+            @end="dragEnd"
           >
             <template #item="{ element, index }">
-              <VCard
+              <v-card
                 :file-name="element.fileName"
-                :style="{ top: `${index * 35}px` }"
+                :style="{ top: `${index * 25}px` }"
                 class="cursor-pointer"
-              ></VCard>
+              ></v-card>
             </template>
           </draggable>
         </div>
@@ -65,22 +65,22 @@
             item-key="fileName"
             :force-fallback="true"
             :fallback-on-body="true"
-            :move="move"
+            :move="dragMove"
             @start="onDrag()"
-            @end="end"
+            @end="dragEnd"
           >
             <template #item="{ element }">
-              <VCard
+              <v-card
                 :file-name="element.fileName"
                 class="absolute top-0 left-0 cursor-pointer"
-              ></VCard>
+              ></v-card>
             </template>
           </draggable>
         </div>
       </div>
     </div>
 
-    <div class="flex justify-between h-full">
+    <div class="flex justify-between h-full overflow-auto">
       <div
         v-for="(deck, deckIdx) in unOrderDeck"
         :key="deckIdx"
@@ -95,309 +95,108 @@
           filter=".disabled-drag"
           :force-fallback="true"
           :fallback-on-body="true"
-          :move="move"
-          @start="start($event, deckIdx)"
-          @add="add($event, deck)"
-          @end="end"
+          :move="dragMove"
+          @start="dragStart($event, deckIdx)"
+          @add="dragAdd($event, deck)"
+          @end="dragEnd"
         >
           <template #item="{ element, index }">
-            <VCard
+            <v-card
               :file-name="element.fileName"
-              :style="{ top: `${index * 35}px` }"
+              :style="{ top: `${index * 25}px` }"
               class="absolute mx-auto"
               :class="{
                 'disabled-drag': element.disabled,
                 'cursor-pointer': !element.disabled
               }"
-            ></VCard>
+            ></v-card>
           </template>
         </draggable>
       </div>
     </div>
+
+    <footer class="flex justify-between items-center border-t border-cccccc py-5">
+      <div class="flex items-center">
+        <div class="flex justify-center items-center w-10 h-10 rounded-full border-2 cursor-pointer">
+          <img :src="require('@/assets/footer/info.svg')">
+        </div>
+
+        <div class="font-bold text-sm">
+          <span class="ml-4">TIME: 00:00</span>
+          <span class="ml-4">SCORE</span>
+        </div>
+      </div>
+
+      <div>
+        <v-btn class="mr-4" @click="newGame(), handleCardDisabled()">
+          NEW GAME
+        </v-btn>
+
+        <v-btn class="mr-4" @click="restart(), handleCardDisabled()">
+          RESTART
+        </v-btn>
+
+        <v-btn class="mr-4">
+          HINT
+        </v-btn>
+
+        <v-btn>UNDO</v-btn>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
-import { inject, onMounted, reactive } from 'vue'
+import { onMounted } from 'vue'
 import draggable from 'vuedraggable'
+
+// 可組合
+import useDeal from '@/composables/useDeal'
+import useDrag from '@/composables/useDrag'
 
 // 組件
 import VCard from '@/components/VCard'
+import VBtn from '@/components/VBtn'
 
 export default {
   name: 'Home',
 
   components: {
     VCard,
+    VBtn,
     draggable
   },
 
   setup() {
     // 發牌、拖曳
-    const { tempDeck, orderDeck, unOrderDeck } = useDeal()
-    const { start, onDrag, add, end, move } = useDrag(tempDeck, orderDeck, unOrderDeck)
+    const { tempDeck, orderDeck, unOrderDeck, newGame, restart } = useDeal()
+    const {
+      dragStart,
+      onDrag,
+      dragAdd,
+      dragEnd,
+      dragMove,
+      handleCardDisabled
+    } = useDrag(tempDeck, orderDeck, unOrderDeck)
+
+    onMounted(() => {
+      newGame()
+      handleCardDisabled()
+    })
 
     return {
-      start,
+      newGame,
+      restart,
+      dragStart,
+      dragAdd,
+      dragEnd,
+      dragMove,
       onDrag,
-      add,
-      end,
-      move,
+      handleCardDisabled,
       tempDeck,
       orderDeck,
       unOrderDeck
     }
-  }
-}
-
-/**
- * 發牌功能
- * 建立52張牌組，洗牌後分別打進8個陣列
- * 前4個陣列7張牌，後4個陣列6張牌
- */
-function useDeal() {
-  const _ = inject('_')
-
-  const unOrderDeck = reactive([[], [], [], [], [], [], [], []])
-  const tempDeck = reactive([[], [], [], []])
-  const orderDeck = reactive({
-    S: [],
-    H: [],
-    D: [],
-    C: []
-  })
-  const types = ['S', 'H', 'D', 'C']
-
-  let cards = []
-
-  // 建立牌組
-  types.forEach((item) => {
-    for (let i = 0; i < 13; i++) {
-      const fileName = `${item}${i + 1}`
-
-      cards.push({
-        fileName,
-        type: item,
-        color: item === 'S' || item === 'C' ? 'black' : 'red',
-        number: i + 1,
-        disabled: true
-      })
-    }
-  })
-
-  // 洗牌
-  cards = _.shuffle(cards)
-
-  // 發牌
-  unOrderDeck.forEach((item, i) => {
-    const length = i < 4 ? 7 : 6
-    const slice = cards.slice(0, length)
-
-    item.push(...slice)
-    cards.splice(0, length)
-  })
-
-  return { tempDeck, orderDeck, unOrderDeck }
-}
-
-/**
- * 牌組拖曳功能
- */
-function useDrag(tempDeck, orderDeck, unOrderDeck) {
-  const onDragSource = reactive({
-    deckIdx: null,
-    cardIdx: null
-  })
-
-  // 將 unOrderDeck 區分可拖曳與否
-  const handleCardDisabled = () => {
-    unOrderDeck.forEach((item) => {
-      const range = { min: null, max: item.length }
-
-      for (let i = item.length - 1; i >= 0; i--) {
-        if (i - 1 === -1) break
-
-        const curr = item[i].number
-        const prev = item[i - 1].number
-
-        if (prev === curr + 1) {
-          range.min = i - 1
-        } else {
-          break
-        }
-      }
-
-      if (range.min) {
-        for (let i = range.min; i < range.max; i++) {
-          item[i].disabled = false
-        }
-      } else {
-        item[item.length - 1].disabled = false
-      }
-    })
-  }
-
-  const start = (e, deckIdx) => {
-    onDragSource.deckIdx = deckIdx
-    onDragSource.cardIdx = e.oldIndex
-
-    // 當前拖曳卡片
-    const idx = e.oldIndex
-
-    // 來源牌組
-    const sourceContent = e.from
-    const sourceLength = e.from.children.length
-
-    // 隱藏當前拖曳卡片後面的卡並將該張卡加入拖曳清單
-    const cards = []
-
-    if (idx !== sourceLength - 1) {
-      for (let i = idx + 1; i < sourceLength; i++) {
-        const card = sourceContent.children[i]
-          .getElementsByTagName('img')[0]
-          .cloneNode(true)
-
-        sourceContent.children[i].style.opacity = '0'
-        cards.push(card)
-      }
-    }
-
-    onDrag(cards)
-  }
-
-  const onDrag = (arr = []) => {
-    const dragContent = document.getElementsByClassName('sortable-fallback')[0]
-    const position = { top: 0, bottom: 0 }
-
-    arr.forEach((card, i) => {
-      dragContent.appendChild(card)
-    })
-
-    dragContent.children.forEach((img, i, arr) => {
-      img.style.position = 'absolute'
-      img.style.top = `${i * 35}px`
-      img.classList.add('border', 'border-gray', 'rounded-md', 'bg-white')
-
-      if (i === 0) {
-        position.top = img.getBoundingClientRect().top
-      }
-
-      if (i === dragContent.children.length - 1) {
-        position.bottom = img.getBoundingClientRect().bottom
-      }
-    })
-
-    dragContent.classList.remove('border', 'bg-white', 'border-gray')
-    dragContent.style.height = `${position.bottom - position.top + 2}px`
-
-    // 嵌入邊框效果
-    const div = document.createElement('div')
-    div.classList.add(
-      'absolute',
-      'w-full',
-      'h-full',
-      'border-2',
-      'border-yellow',
-      'rounded-md'
-    )
-
-    dragContent.appendChild(div)
-  }
-
-  const add = (e, targetList) => {
-    // 來源牌組
-    const sourceList = unOrderDeck[onDragSource.deckIdx]
-    const sourceLength = sourceList.length
-
-    // 若當前拖曳卡片非牌組最後一張牌 (這邊 sourceContent 已經是移除後的陣列，所以 sourceLength 不用 -1)
-    // 將拖曳的牌組一起加入目標牌組，來源牌組也需刪除
-    if (onDragSource.cardIdx !== sourceLength) {
-      const min = onDragSource.cardIdx
-      const max = sourceLength
-
-      for (let i = min; i < max; i++) {
-        targetList.push(sourceList[i])
-        sourceList.splice(i, 1)
-      }
-    }
-  }
-
-  const end = (e) => {
-    handleCardDisabled()
-
-    // 初始化拖曳中牌組
-    onDragSource.cardIdx = null
-    onDragSource.deckIdx = null
-
-    // 結束拖曳時將原先隱藏的卡片恢復顯示
-    e.from.children.forEach((item) => {
-      item.style.opacity = '1'
-    })
-  }
-
-  const move = (e) => {
-    const source = e.draggedContext
-    const target = e.relatedContext
-
-    const sourceColor = source.element.color
-    const sourceNumber = source.element.number
-    const sourceType = source.element.type
-
-    /**
-     * 目標若為 unOrderDeck
-     * 若 target List 跟原本移除的相同則直接允許
-     * 檢查未排序牌組間移動時比對牌色是否不同、數字是否遞減
-     */
-    if (unOrderDeck.includes(target.list)) {
-      const targetColor = target.element.color
-      const targetNumber = target.element.number
-
-      if (target.list === unOrderDeck[onDragSource.deckIdx]) {
-        return 1
-      }
-
-      if (sourceColor === targetColor || sourceNumber !== targetNumber - 1) {
-        return false
-      } else {
-        return 1
-      }
-    }
-
-    /**
-     * 目標若為 tempDeck
-     * 檢查目標陣列長度是否小於 1
-     */
-    if (tempDeck.includes(target.list)) {
-      return target.list.length < 1 ? 1 : false
-    }
-
-    /**
-     * 目標若為 orderDeck
-     * 花色必須相同、號碼必須遞增
-     */
-    for (const [key, value] of Object.entries(orderDeck)) {
-      let targetNumber = 0
-
-      if (target.list.length) {
-        targetNumber = target.element.number
-      }
-
-      if (value === target.list) {
-        return sourceType === key && sourceNumber === targetNumber + 1 ? 1 : false
-      }
-    }
-  }
-
-  onMounted(() => {
-    handleCardDisabled()
-  })
-
-  return {
-    start,
-    onDrag,
-    add,
-    end,
-    move
   }
 }
 </script>

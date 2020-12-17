@@ -8,10 +8,12 @@ module.exports = {
       black: '#222222',
       white: '#fcfcfc',
       yellow: '#ffb53e',
-      gray: '#e2e2e2'
+      gray: '#e2e2e2',
+      cccccc: '#cccccc'
     },
     extend: {
       width: {
+        30: '7.5rem',
         card: '95px',
         king: '60px'
       },
@@ -26,6 +28,9 @@ module.exports = {
       },
       backgroundSize: {
         35: '35px'
+      },
+      borderRadius: {
+        btn: '50px'
       },
       backgroundImage: () => ({
         C: 'url("~@/assets/cardsBG/C.png")',
