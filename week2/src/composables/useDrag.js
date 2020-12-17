@@ -12,7 +12,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
 
   // 將 unOrderDeck 區分可拖曳與否
   const handleCardDisabled = () => {
-    unOrderDeck.value.forEach((item) => {
+    unOrderDeck.forEach((item) => {
       const range = { min: null, max: item.length }
 
       for (let i = item.length - 1; i >= 0; i--) {
@@ -107,7 +107,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
 
   const dragAdd = (e, targetList) => {
     // 來源牌組
-    const sourceList = unOrderDeck.value[onDragSource.deckIdx]
+    const sourceList = unOrderDeck[onDragSource.deckIdx]
     const sourceLength = sourceList.length
 
     // 若當前拖曳卡片非牌組最後一張牌 (這邊 sourceContent 已經是移除後的陣列，所以 sourceLength 不用 -1)
@@ -149,11 +149,11 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
     * 若 target List 跟原本移除的相同則直接允許
     * 檢查未排序牌組間移動時比對牌色是否不同、數字是否遞減
     */
-    if (unOrderDeck.value.includes(target.list)) {
+    if (unOrderDeck.includes(target.list)) {
       const targetColor = target.element.color
       const targetNumber = target.element.number
 
-      if (target.list === unOrderDeck.value[onDragSource.deckIdx]) {
+      if (target.list === unOrderDeck[onDragSource.deckIdx]) {
         return 1
       }
 
@@ -168,7 +168,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
     * 目標若為 tempDeck
     * 檢查目標陣列長度是否小於 1
     */
-    if (tempDeck.value.includes(target.list)) {
+    if (tempDeck.includes(target.list)) {
       return target.list.length < 1 ? 1 : false
     }
 
@@ -176,7 +176,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
     * 目標若為 orderDeck
     * 花色必須相同、號碼必須遞增
     */
-    for (const [key, value] of Object.entries(orderDeck.value)) {
+    for (const [key, value] of Object.entries(orderDeck)) {
       let targetNumber = 0
 
       if (target.list.length) {
