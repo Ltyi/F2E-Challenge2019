@@ -1,5 +1,5 @@
 <template>
-  <div class="select-none rounded-md bg-white border-card border-gray transition-opacity ease-out">
+  <div class="select-none rounded-md bg-white border border-gray transition-opacity ease-out">
     <img :src="imageSrc">
   </div>
 </template>

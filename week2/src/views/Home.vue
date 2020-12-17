@@ -173,28 +173,47 @@ export default {
       const sourceContent = e.from
       const sourceLength = e.from.children.length
 
-      // 取得當前拖曳卡片後面的卡
+      // 隱藏當前拖曳卡片後面的卡並將該張卡加入拖曳清單
       const cards = []
 
       if (idx !== sourceLength - 1) {
         for (let i = idx + 1; i < sourceLength; i++) {
           const card = sourceContent.children[i].getElementsByTagName('img')[0].cloneNode(true)
-          // 將該張卡隱藏
+
           sourceContent.children[i].style.opacity = '0'
-          // 將該張卡加入拖曳清單
           cards.push(card)
         }
       }
 
-      // 將已排序的卡片一併拖曳
       const dragContent = document.getElementsByClassName('sortable-fallback')[0]
+      const position = { top: 0, bottom: 0 }
 
       cards.forEach((card, i) => {
-        card.style.position = 'absolute'
-        card.style.top = `${(i + 1) * 35}px`
-
         dragContent.appendChild(card)
       })
+
+      dragContent.children.forEach((img, i, arr) => {
+        img.style.position = 'absolute'
+        img.style.top = `${i * 35}px`
+        img.classList.add('border', 'border-gray', 'rounded-md', 'bg-white')
+
+        if (i === 0) {
+          position.top = img.getBoundingClientRect().top
+        }
+
+        if (i === dragContent.children.length - 1) {
+          position.bottom = img.getBoundingClientRect().bottom
+        }
+      })
+
+      dragContent.classList.remove('border', 'bg-white', 'border-gray')
+      dragContent.style.height = `${(position.bottom - position.top) + 2}px`
+
+      // 嵌入邊框效果
+      const div = document.createElement('div')
+      div.classList.add('absolute', 'w-full', 'h-full', 'border-2', 'border-yellow', 'rounded-md')
+
+      dragContent.appendChild(div)
     }
 
     const add = (e, targetList) => {
@@ -354,10 +373,6 @@ function useDeal() {
 </script>
 
 <style lang="postcss" scoped>
-/* [draggable="true"] {
-  user-select: none;
-} */
-
 .sortable-fallback {
   opacity: 1 !important;
 }
