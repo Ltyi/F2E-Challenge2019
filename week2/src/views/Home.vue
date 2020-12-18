@@ -59,7 +59,7 @@
 
           <draggable
             class="absolute w-full h-full"
-            :list="deck"
+            :list="orderDeck[key]"
             :group="{ name: 'deck' }"
             :sort="false"
             item-key="fileName"

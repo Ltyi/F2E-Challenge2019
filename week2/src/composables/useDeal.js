@@ -27,8 +27,7 @@ export default function useDeal() {
     tempDeck.push([], [], [], [])
 
     for (const key in orderDeck) {
-      orderDeck[key].length = 0
-      orderDeck[key].push([])
+      orderDeck[key] = []
     }
   }
 
