@@ -1,14 +1,18 @@
-import { reactive } from 'vue'
+import { reactive, inject } from 'vue'
 
 /**
 * 牌組拖曳功能
 */
 
 export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
+  const _ = inject('_')
+
   const onDragSource = reactive({
     deckIdx: null,
     cardIdx: null
   })
+
+  const record = reactive([])
 
   // 將 unOrderDeck 區分可拖曳與否
   const handleCardDisabled = () => {
@@ -175,6 +179,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
       if (sourceColor === targetColor || sourceNumber !== targetNumber - 1) {
         return false
       } else {
+        saveRecord()
         return 1
       }
     }
@@ -187,7 +192,12 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
       const length = unOrderDeck[onDragSource.deckIdx].length
 
       if (onDragSource.cardIdx === length - 1) {
-        return target.list.length < 1 ? 1 : false
+        if (target.list.length < 1) {
+          saveRecord()
+          return 1
+        } else {
+          return false
+        }
       } else {
         return false
       }
@@ -205,12 +215,32 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
       }
 
       if (value === target.list) {
-        return sourceType === key && sourceNumber === targetNumber + 1 ? 1 : false
+        if (sourceType === key && sourceNumber === targetNumber + 1) {
+          saveRecord()
+          return 1
+        } else {
+          return false
+        }
       }
     }
   }
 
+  const saveRecord = () => {
+    // 紀錄移動前的陣列狀態
+    record.unshift({
+      unOrderDeck: _.cloneDeep(unOrderDeck),
+      orderDeck: _.cloneDeep(orderDeck),
+      tempDeck: _.cloneDeep(tempDeck)
+    })
+  }
+
+  const removeRecord = () => {
+    record.splice(0, 1)
+  }
+
   return {
+    record,
+    removeRecord,
     dragStart,
     onDrag,
     dragAdd,

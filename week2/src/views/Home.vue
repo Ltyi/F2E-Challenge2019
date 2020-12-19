@@ -140,7 +140,9 @@
           HINT
         </v-btn>
 
-        <v-btn>UNDO</v-btn>
+        <v-btn @click="undo(record, removeRecord)">
+          UNDO
+        </v-btn>
       </div>
     </footer>
   </div>
@@ -169,14 +171,16 @@ export default {
 
   setup() {
     // 發牌、拖曳
-    const { tempDeck, orderDeck, unOrderDeck, newGame, restart } = useDeal()
+    const { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo } = useDeal()
     const {
       dragStart,
       onDrag,
       dragAdd,
       dragEnd,
       dragMove,
-      handleCardDisabled
+      handleCardDisabled,
+      record,
+      removeRecord
     } = useDrag(tempDeck, orderDeck, unOrderDeck)
 
     onMounted(() => {
@@ -187,6 +191,9 @@ export default {
     return {
       newGame,
       restart,
+      record,
+      removeRecord,
+      undo,
       dragStart,
       dragAdd,
       dragEnd,

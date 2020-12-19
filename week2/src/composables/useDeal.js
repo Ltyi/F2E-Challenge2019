@@ -49,6 +49,18 @@ export default function useDeal() {
     unOrderDeck.push(...oldArr)
   }
 
+  // UNDO
+  const undo = (record, removeRecord) => {
+    unOrderDeck.length = 0
+    tempDeck.length = 0
+
+    unOrderDeck.push(...record[0].unOrderDeck)
+    tempDeck.push(...record[0].tempDeck)
+    Object.assign(orderDeck, record[0].orderDeck)
+
+    removeRecord()
+  }
+
   // 發牌
   const init = () => {
     let cards = []
@@ -81,5 +93,5 @@ export default function useDeal() {
     })
   }
 
-  return { tempDeck, orderDeck, unOrderDeck, newGame, restart }
+  return { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo }
 }
