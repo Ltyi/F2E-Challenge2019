@@ -21,6 +21,7 @@
             :fallback-on-body="true"
             :move="dragMove"
             @start="onDrag()"
+            @add="dragAdd"
             @end="dragEnd"
           >
             <template #item="{ element, index }">
@@ -107,7 +108,8 @@
               class="absolute mx-auto"
               :class="{
                 'disabled-drag': element.disabled,
-                'cursor-pointer': !element.disabled
+                'cursor-pointer': !element.disabled,
+                'hinting': element.hint,
               }"
             ></v-card>
           </template>
@@ -136,7 +138,7 @@
           RESTART
         </v-btn>
 
-        <v-btn class="mr-4">
+        <v-btn class="mr-4" @click="hint">
           HINT
         </v-btn>
 
@@ -170,8 +172,9 @@ export default {
   },
 
   setup() {
-    // 發牌、拖曳
-    const { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo } = useDeal()
+    // 牌組功能、拖曳
+    const { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo, hint } = useDeal()
+
     const {
       dragStart,
       onDrag,
@@ -194,6 +197,7 @@ export default {
       record,
       removeRecord,
       undo,
+      hint,
       dragStart,
       dragAdd,
       dragEnd,

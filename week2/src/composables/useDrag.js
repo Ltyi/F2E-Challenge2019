@@ -1,4 +1,5 @@
-import { reactive, inject } from 'vue'
+import { reactive, inject, nextTick } from 'vue'
+import { removeHintBorder } from '@/util/hintBorder'
 
 /**
 * 牌組拖曳功能
@@ -51,6 +52,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
     })
   }
 
+  // @start for unOrderDeck
   const dragStart = (e, deckIdx) => {
     onDragSource.deckIdx = deckIdx
     onDragSource.cardIdx = e.oldIndex
@@ -62,6 +64,10 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
     const sourceContent = e.from
     const sourceLength = e.from.children.length
 
+    // 隱藏 HINT 邊框
+    const hintContent = sourceContent.getElementsByClassName('hinting-content')
+    hintContent.forEach(item => (item.style.display = 'none'))
+
     // 隱藏當前拖曳卡片後面的卡並將該張卡加入拖曳清單
     const cards = []
 
@@ -69,10 +75,12 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
       for (let i = idx + 1; i < sourceLength; i++) {
         const card = sourceContent.children[i]
           .getElementsByTagName('img')[0]
-          .cloneNode(true)
 
-        sourceContent.children[i].style.opacity = '0'
-        cards.push(card)
+        if (card) {
+          const cloneNode = card.cloneNode(true)
+          sourceContent.children[i].style.opacity = '0'
+          cards.push(cloneNode)
+        }
       }
     }
 
@@ -106,6 +114,7 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
 
     // 嵌入邊框效果
     const div = document.createElement('div')
+
     div.classList.add(
       'absolute',
       'w-full',
@@ -138,10 +147,16 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
         sourceList.splice(min)
       }
     }
+
+    resetHint()
   }
 
   const dragEnd = (e) => {
     handleCardDisabled()
+
+    // 若有 Hinting 中的卡片恢復顯示
+    const elements = document.getElementsByClassName('hinting-content')
+    elements.forEach(item => (item.style.display = 'block'))
 
     // 初始化拖曳中牌組
     onDragSource.cardIdx = null
@@ -236,6 +251,20 @@ export default function useDrag(tempDeck, orderDeck, unOrderDeck) {
 
   const removeRecord = () => {
     record.splice(0, 1)
+  }
+
+  const resetHint = () => {
+    unOrderDeck.forEach(item => {
+      item.forEach(card => (card.hint = false))
+    })
+
+    tempDeck.forEach(item => {
+      item.forEach(card => (card.hint = false))
+    })
+
+    nextTick(() => {
+      removeHintBorder()
+    })
   }
 
   return {
