@@ -4,11 +4,11 @@
       <img :src="require('@/assets/kings/king_joy.png')" class="w-14 mb-4">
 
       <p class="tracking-widest text-xl font-bold mb-5">
-        CONGRATULATIONS!
+        START A NEW GAME
       </p>
 
       <p class="tracking-wider text-sm mb-16">
-        You win the game!
+        Are you sure you want to give up?
       </p>
 
       <div>
