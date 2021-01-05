@@ -119,18 +119,13 @@
 
     <footer class="flex justify-between items-center border-t border-cccccc py-5">
       <div class="flex items-center">
-        <div class="flex justify-center items-center w-10 h-10 rounded-full border-2 cursor-pointer">
+        <!-- <div class="flex justify-center items-center w-10 h-10 rounded-full border-2 cursor-pointer">
           <img :src="require('@/assets/footer/info.svg')">
-        </div>
-
-        <div class="font-bold text-sm">
-          <span class="ml-4">TIME: 00:00</span>
-          <span class="ml-4">SCORE</span>
-        </div>
+        </div> -->
       </div>
 
       <div>
-        <v-btn class="mr-4" @click="newGame(), handleCardDisabled()">
+        <v-btn class="mr-4" @click="newGameModalHandle">
           NEW GAME
         </v-btn>
 
@@ -147,11 +142,14 @@
         </v-btn>
       </div>
     </footer>
+
+    <!-- New Game Modal -->
+    <modal-new-game v-model="newGameModal" @newGame="newGameClick"></modal-new-game>
   </div>
 </template>
 
 <script>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import draggable from 'vuedraggable'
 
 // 可組合
@@ -161,6 +159,7 @@ import useDrag from '@/composables/useDrag'
 // 組件
 import VCard from '@/components/VCard'
 import VBtn from '@/components/VBtn'
+import ModalNewGame from '@/components/ModalNewGame'
 
 export default {
   name: 'Home',
@@ -168,6 +167,7 @@ export default {
   components: {
     VCard,
     VBtn,
+    ModalNewGame,
     draggable
   },
 
@@ -186,13 +186,28 @@ export default {
       removeRecord
     } = useDrag(tempDeck, orderDeck, unOrderDeck)
 
+    // Modals
+    const newGameModal = ref(false)
+
+    const newGameModalHandle = () => {
+      newGameModal.value = !newGameModal.value
+    }
+
+    const newGameClick = () => {
+      newGame()
+      handleCardDisabled()
+      newGameModal.value = false
+    }
+
     onMounted(() => {
       newGame()
       handleCardDisabled()
     })
 
     return {
-      newGame,
+      newGameModal,
+      newGameModalHandle,
+      newGameClick,
       restart,
       record,
       removeRecord,

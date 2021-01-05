@@ -56,6 +56,8 @@ export default function useDeal() {
 
   // UNDO
   const undo = (record, removeRecord) => {
+    if (!record.length) return
+
     unOrderDeck.length = 0
     tempDeck.length = 0
 
@@ -68,7 +70,7 @@ export default function useDeal() {
 
   // HINT
   const hint = () => {
-    // 先取出各牌面可拖曳的號碼
+    // 檢查 unOrderDeck 可排序的號碼
     for (let i = 0; i < unOrderDeck.length; i++) {
       const arr = unOrderDeck[i].filter((item) => !item.disabled)
 
@@ -83,8 +85,6 @@ export default function useDeal() {
           return
         }
       }
-
-      console.log('1')
     }
   }
 
