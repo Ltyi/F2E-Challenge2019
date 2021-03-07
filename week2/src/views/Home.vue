@@ -116,7 +116,7 @@
     </div>
 
     <footer class="flex justify-between items-center border-t border-cccccc py-5">
-      <div class="flex items-center">
+      <!-- <div class="flex items-center">
         <div class="flex justify-center items-center w-10 h-10 rounded-full border-2 cursor-pointer">
           <img :src="require('@/assets/footer/info.svg')">
         </div>
@@ -125,14 +125,14 @@
           <span class="ml-4">TIME: 00:00</span>
           <span class="ml-4">SCORE</span>
         </div>
-      </div>
+      </div> -->
 
       <div>
         <v-btn class="mr-4" @click="newGame(), handleCardDisabled()">
           NEW GAME
         </v-btn>
 
-        <v-btn class="mr-4" @click="restart(), handleCardDisabled()">
+        <!-- <v-btn class="mr-4" @click="restart(), handleCardDisabled()">
           RESTART
         </v-btn>
 
@@ -142,7 +142,7 @@
 
         <v-btn @click="undo(record, removeRecord)">
           UNDO
-        </v-btn>
+        </v-btn> -->
       </div>
     </footer>
   </div>
