@@ -21,6 +21,7 @@
             :fallback-on-body="true"
             :move="dragMove"
             @start="onDrag()"
+            @add="dragAdd"
             @end="dragEnd"
           >
             <template #item="{ element, index }">
@@ -107,7 +108,8 @@
               class="absolute mx-auto"
               :class="{
                 'disabled-drag': element.disabled,
-                'cursor-pointer': !element.disabled
+                'cursor-pointer': !element.disabled,
+                'hinting': element.hint,
               }"
             ></v-card>
           </template>
@@ -126,9 +128,14 @@
           <span class="ml-4">SCORE</span>
         </div>
       </div> -->
+      <div class="flex items-center">
+        <!-- <div class="flex justify-center items-center w-10 h-10 rounded-full border-2 cursor-pointer">
+          <img :src="require('@/assets/footer/info.svg')">
+        </div> -->
+      </div>
 
       <div>
-        <v-btn class="mr-4" @click="newGame(), handleCardDisabled()">
+        <v-btn class="mr-4" @click="newGameModalHandle">
           NEW GAME
         </v-btn>
 
@@ -136,7 +143,7 @@
           RESTART
         </v-btn>
 
-        <v-btn class="mr-4">
+        <v-btn class="mr-4" @click="hint">
           HINT
         </v-btn>
 
@@ -145,11 +152,14 @@
         </v-btn> -->
       </div>
     </footer>
+
+    <!-- New Game Modal -->
+    <modal-new-game v-model="newGameModal" @newGame="newGameClick"></modal-new-game>
   </div>
 </template>
 
 <script>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import draggable from 'vuedraggable'
 
 // 可組合
@@ -159,6 +169,7 @@ import useDrag from '@/composables/useDrag'
 // 組件
 import VCard from '@/components/VCard'
 import VBtn from '@/components/VBtn'
+import ModalNewGame from '@/components/ModalNewGame'
 
 export default {
   name: 'Home',
@@ -166,12 +177,14 @@ export default {
   components: {
     VCard,
     VBtn,
+    ModalNewGame,
     draggable
   },
 
   setup() {
-    // 發牌、拖曳
-    const { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo } = useDeal()
+    // 牌組功能、拖曳
+    const { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo, hint } = useDeal()
+
     const {
       dragStart,
       onDrag,
@@ -183,17 +196,33 @@ export default {
       removeRecord
     } = useDrag(tempDeck, orderDeck, unOrderDeck)
 
+    // Modals
+    const newGameModal = ref(false)
+
+    const newGameModalHandle = () => {
+      newGameModal.value = !newGameModal.value
+    }
+
+    const newGameClick = () => {
+      newGame()
+      handleCardDisabled()
+      newGameModal.value = false
+    }
+
     onMounted(() => {
       newGame()
       handleCardDisabled()
     })
 
     return {
-      newGame,
+      newGameModal,
+      newGameModalHandle,
+      newGameClick,
       restart,
       record,
       removeRecord,
       undo,
+      hint,
       dragStart,
       dragAdd,
       dragEnd,

@@ -1,4 +1,5 @@
-import { reactive, inject } from 'vue'
+import { reactive, inject, nextTick } from 'vue'
+import { removeHintBorder, insertHintBorder } from '@/util/hintBorder'
 
 /**
  * 牌組功能
@@ -29,6 +30,10 @@ export default function useDeal() {
     for (const key in orderDeck) {
       orderDeck[key] = []
     }
+
+    nextTick(() => {
+      removeHintBorder()
+    })
   }
 
   // 開始新遊戲
@@ -51,6 +56,8 @@ export default function useDeal() {
 
   // UNDO
   const undo = (record, removeRecord) => {
+    if (!record.length) return
+
     unOrderDeck.length = 0
     tempDeck.length = 0
 
@@ -60,6 +67,68 @@ export default function useDeal() {
 
     removeRecord()
   }
+
+  // HINT
+  const hint = () => {
+    // 檢查 unOrderDeck 可排序的號碼
+    for (let i = 0; i < unOrderDeck.length; i++) {
+      const arr = unOrderDeck[i].filter((item) => !item.disabled)
+
+      for (let j = 0; j < arr.length; j++) {
+        const from = arr[j]
+        const to = findHintCard(from)
+
+        if (to) {
+          if (!from.hint && !to.hint) {
+            showHint(from, to)
+          }
+          return
+        }
+      }
+    }
+  }
+
+  const findHintCard = (from) => {
+    for (let i = 0; i < unOrderDeck.length; i++) {
+      const idx = unOrderDeck[i].length - 1
+      const currentCard = unOrderDeck[i][idx]
+
+      if (from.fileName === currentCard.fileName) {
+        continue
+      }
+
+      if (from.color !== currentCard.color && from.number === currentCard.number - 1) {
+        return currentCard
+      }
+    }
+  }
+
+  const showHint = (from, to) => {
+    unOrderDeck.forEach((item) => {
+      const fromIdx = item.findIndex((x) => x.fileName === from.fileName)
+      const toIdx = item.findIndex((x) => x.fileName === to.fileName)
+
+      if (fromIdx !== -1) {
+        item[fromIdx].hint = true
+      }
+
+      if (toIdx !== -1) {
+        item[toIdx].hint = true
+      }
+    })
+
+    nextTick(() => {
+      insertHintBorder()
+    })
+  }
+
+  // const closeHint = () => {
+  //   unOrderDeck.forEach((item) => {
+  //     item.forEach((card) => {
+  //       card.hint = false
+  //     })
+  //   })
+  // }
 
   // 發牌
   const init = () => {
@@ -93,5 +162,5 @@ export default function useDeal() {
     })
   }
 
-  return { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo }
+  return { tempDeck, orderDeck, unOrderDeck, newGame, restart, undo, hint }
 }
